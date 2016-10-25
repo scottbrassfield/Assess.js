@@ -24,8 +24,10 @@
   },
   "homepage": "https://github.com/scottbrassfield/Assess.js#readme",
   "dependencies": {
+    "async": "^2.1.2",
+    "body-parser": "^1.15.2",
     "express": "^4.14.0",
-    "node-neo4j": "^2.0.3",
+    "neo4j": "^2.0.0-RC2",
     "request": "^2.76.0"
   },
   "devDependencies": {
