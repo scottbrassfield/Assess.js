@@ -6,7 +6,7 @@ const makeApp = require('../app')
 const TEST_PORT = 3002
 const TEST_URI = 'http://localhost:' + TEST_PORT
 
-const TEST_DB_URL = process.env.GRAPHENEDB_URL
+const TEST_DB_URL = 'http://app58406399-TryVsz:YQ32mf5SEv18v65k1520@hobby-gpccabodoeaggbkebocofgol.dbs.graphenedb.com:24789'
 const testPost = {problem: 'keyword for a constant'}
 
 
