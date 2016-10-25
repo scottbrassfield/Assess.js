@@ -21,7 +21,6 @@ describe('Express Server', () => {
     done()
   })
 
-
   describe('Simple GET request', () => {
     it('returns static assets', done => {
       request.get(TEST_URI, (err, res, body) => {
