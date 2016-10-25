@@ -1,2 +1,2 @@
-# jQuiz
-An adaptive knowledge assessment for JavaScript learners 
+# Assess.js
+An adaptive knowledge assessment for JavaScript learners
