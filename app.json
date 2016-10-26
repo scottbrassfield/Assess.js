@@ -3,6 +3,7 @@
   "scripts": {
   },
   "env": {
+    "GRAPHENEDB_URL":"http://app58406399-TryVsz:YQ32mf5SEv18v65k1520@hobby-gpccabodoeaggbkebocofgol.dbs.graphenedb.com:24789"
   },
   "formation": {
     "web": {
