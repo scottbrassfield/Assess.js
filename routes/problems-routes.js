@@ -17,9 +17,17 @@ module.exports = function(db) {
     })
   })
 
-  router.get('/:node_id', (req, res) => {
+  router.get('/node/:node_id', (req, res) => {
     const id = req.params.node_id
     db.readNode(id, (err, result) => {
+      if (err) throw err;
+      res.json(result)
+    })
+  })
+
+  router.get('/relationship', (req, res) => {
+    const concept = parseInt(req.query.concept)
+    db.cypherQuery("START concept = node({id}) MATCH (concept)<-[:RELATED_TO]-(problem) RETURN problem", {id: concept}, (err, result) => {
       if (err) throw err;
       res.json(result)
     })

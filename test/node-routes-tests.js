@@ -109,7 +109,7 @@ describe('Database Connection', () => {
             node_id = node._id
           }
         })
-        request.get(TEST_URI + '/problems/' + node_id, {json: true}, (err, res, body) => {
+        request.get(TEST_URI + '/problems/node/' + node_id, {json: true}, (err, res, body) => {
           expect(err).to.be.null
           expect(body).to.have.property('_id', node_id)
           expect(body).to.have.property('label', 'Problem')
@@ -118,6 +118,33 @@ describe('Database Connection', () => {
       })
     })
   })
+
+  describe ('GET /problems related to specific concept', () => {
+    it('retrieves all problems related to supplied concept', done => {
+      db.cypherQuery("MATCH (n) RETURN n", (err, result) => {
+        if (err) throw err;
+        let problem_id, concept_id
+        result.data.forEach(node => {
+          if (!problem_id && node.label === 'Problem') {
+            problem_id = node._id
+          }
+          if (!concept_id && node.label === 'Concept') {
+            concept_id = node._id
+          }
+        })
+        db.insertRelationship(problem_id, concept_id, 'RELATED_TO', {}, (err, result) => {
+          if (err) throw err;
+          const query = {concept: concept_id}
+          request.get(TEST_URI + '/problems/relationship', {json: true, qs: query}, (err, res, body) => {
+            expect(err).to.be.null
+            expect(body.data).to.have.length(1)
+            done()
+          })
+        })
+      })
+    })
+  })
+
 
   describe('GET /concepts', () => {
     it('retrieves all concept nodes in database', done => {
@@ -139,7 +166,7 @@ describe('Database Connection', () => {
             node_id = node._id
           }
         })
-        request.get(TEST_URI + '/concepts/' + node_id, {json: true}, (err, res, body) => {
+        request.get(TEST_URI + '/concepts/node/' + node_id, {json: true}, (err, res, body) => {
           expect(err).to.be.null
           expect(body).to.have.property('_id', node_id)
           expect(body).to.have.property('label', 'Concept')
@@ -147,6 +174,36 @@ describe('Database Connection', () => {
         })
       })
     })
+  })
+
+  describe ('GET /concepts related to specific concept', () => {
+    it('retrieves all concepts related to supplied concept', done => {
+      db.cypherQuery("MATCH (n) RETURN n", (err, result) => {
+        if (err) throw err;
+        let root_concept_id, related_concept_id
+        result.data.forEach(node => {
+          if (!root_concept_id && node.label === 'Concept') {
+            root_concept_id = node._id
+          }
+          if (!related_concept_id && node.label === 'Concept') {
+            related_concept_id = node._id
+          }
+        })
+        db.insertRelationship(root_concept_id, related_concept_id, 'RELATED_TO', {}, (err, result) => {
+          if (err) throw err;
+          const query = {concept: concept_id}
+          request.get(TEST_URI + '/concepts/relationship', {json: true, qs: query}, (err, res, body) => {
+            expect(err).to.be.null
+            expect(body.data).to.have.length(1)
+            done()
+          })
+        })
+      })
+    })
+  })
+
+  describe ('GET /concept related to specific problem', () => {
+
   })
 
 

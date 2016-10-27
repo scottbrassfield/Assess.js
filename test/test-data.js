@@ -1,8 +1,8 @@
 module.exports = {
 
-    postProblem: { id: 4, question: 'question 2', answer: 'answer 2', label: 'Problem'},
+    postProblem: { question: 'question 2', answer: 'answer 2', label: 'Problem'},
 
-    postConcept: { id: 5, concept: 'concept 3', description: 'this is concept 3', label: 'Concept'},
+    postConcept: { concept: 'concept 3', description: 'this is concept 3', label: 'Concept'},
 
     seed: [
       {
