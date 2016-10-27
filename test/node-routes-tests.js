@@ -138,6 +138,7 @@ describe('Database Connection', () => {
           request.get(TEST_URI + '/problems/relationship', {json: true, qs: query}, (err, res, body) => {
             expect(err).to.be.null
             expect(body.data).to.have.length(1)
+            expect(body.data[0]).to.have.property('label', 'Problem')
             done()
           })
         })
@@ -176,8 +177,8 @@ describe('Database Connection', () => {
     })
   })
 
-  describe ('GET /concepts related to specific concept', () => {
-    it('retrieves all concepts related to supplied concept', done => {
+  describe ('GET /concepts - preceding', () => {
+    it('retrieves all concepts that precede a supplied concept', done => {
       db.cypherQuery("MATCH (n) RETURN n", (err, result) => {
         if (err) throw err;
         let root_concept_id, related_concept_id
@@ -191,10 +192,42 @@ describe('Database Connection', () => {
         })
         db.insertRelationship(root_concept_id, related_concept_id, 'RELATED_TO', {}, (err, result) => {
           if (err) throw err;
-          const query = {concept: concept_id}
-          request.get(TEST_URI + '/concepts/relationship', {json: true, qs: query}, (err, res, body) => {
+          const query = {concept: root_concept_id}
+          request.get(TEST_URI + '/concepts/relationship/preceding', {json: true, qs: query}, (err, res, body) => {
+            console.log(body.data)
             expect(err).to.be.null
             expect(body.data).to.have.length(1)
+            expect(body.data[0]).to.have.property('label', 'Concept')
+            expect(body.data[0]).to.have.property('_id', result._start)
+            done()
+          })
+        })
+      })
+    })
+  })
+
+  describe ('GET /concepts - subsequent', () => {
+    it('retrieves all concepts that are subsequent to a supplied concept', done => {
+      db.cypherQuery("MATCH (n) RETURN n", (err, result) => {
+        if (err) throw err;
+        let root_concept_id, related_concept_id
+        result.data.forEach(node => {
+          if (!root_concept_id && node.label === 'Concept') {
+            root_concept_id = node._id
+          }
+          if (!related_concept_id && node.label === 'Concept') {
+            related_concept_id = node._id
+          }
+        })
+        db.insertRelationship(root_concept_id, related_concept_id, 'RELATED_TO', {}, (err, result) => {
+          if (err) throw err;
+          const query = {concept: root_concept_id}
+          request.get(TEST_URI + '/concepts/relationship/subsequent', {json: true, qs: query}, (err, res, body) => {
+            console.log(body.data)
+            expect(err).to.be.null
+            expect(body.data).to.have.length(1)
+            expect(body.data[0]).to.have.property('label', 'Concept')
+            expect(body.data[0]).to.have.property('_id', result._end)
             done()
           })
         })

@@ -25,9 +25,17 @@ module.exports = function(db) {
     })
   })
 
-  router.get('/relationship', (req, res) => {
+  router.get('/relationship/preceding', (req, res) => {
     const concept = parseInt(req.query.concept)
     db.cypherQuery("START concept = node({id}) MATCH (concept)<-[:RELATED_TO]-(concept) RETURN concept", {id: concept}, (err, result) => {
+      if (err) throw err;
+      res.json(result)
+    })
+  })
+
+  router.get('/relationship/subsequent', (req, res) => {
+    const concept = parseInt(req.query.concept)
+    db.cypherQuery("START concept = node({id}) MATCH (concept)-[:RELATED_TO]->(concept) RETURN concept", {id: concept}, (err, result) => {
       if (err) throw err;
       res.json(result)
     })
