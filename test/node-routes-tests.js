@@ -30,7 +30,7 @@ describe('Database Connection', () => {
     db.cypherQuery("MATCH (n) DETACH DELETE n", (err, res) => {
       if (err) throw err
       async.each(data.seed, (node, cb) => {
-        db.insertNode(node, (err, res) => {
+        db.insertNode(node, node.label, (err, res) => {
           if (err) { cb(err) }
           else { cb() }
         }) }, () => {
@@ -88,4 +88,25 @@ describe('Database Connection', () => {
       })
     })
   })
+
+  describe('GET /problems', () => {
+    it('retrieves all problem nodes in database', done => {
+      request.get(TEST_URI + '/problems', {json: true}, (err, res, body) => {
+        expect(err).to.be.null
+        expect(body).to.have.length(1)
+        done()
+      })
+    })
+  })
+
+  describe('GET /concepts', () => {
+    it('retrieves all concept nodes in database', done => {
+      request.get(TEST_URI + '/concepts', {json: true}, (err, res, body) => {
+        expect(err).to.be.null
+        expect(body).to.have.length(2)
+        done()
+      })
+    })
+  })
+
 })

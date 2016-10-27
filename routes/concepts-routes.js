@@ -10,5 +10,12 @@ module.exports = function(db) {
     })
   })
 
+  router.get('/', (req, res, next) => {
+    db.readNodesWithLabel('Concept', (err, result) => {
+      if (err) throw err
+      res.json(result)
+    })
+  })
+
   return router;
 }
