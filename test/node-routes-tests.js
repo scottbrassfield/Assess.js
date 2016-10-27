@@ -99,6 +99,20 @@ describe('Database Connection', () => {
     })
   })
 
+  describe('GET /problems by id', () => {
+    it('retrieves a problem based on supplied id', done => {
+      db.cypherQuery("MATCH (n) RETURN n", (err, res) => {
+        if (err) throw err
+        node_id = res.data[0]._id
+        request.get(TEST_URI + '/problems/' + node_id, {json: true}, (err, res, body) => {
+          expect(err).to.be.null
+          expect(body).to.have.property('_id', node_id)
+          done()
+        })
+      })
+    })
+  })
+
   describe('GET /concepts', () => {
     it('retrieves all concept nodes in database', done => {
       request.get(TEST_URI + '/concepts', {json: true}, (err, res, body) => {
@@ -108,5 +122,6 @@ describe('Database Connection', () => {
       })
     })
   })
+
 
 })
