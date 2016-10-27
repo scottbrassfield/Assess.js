@@ -103,10 +103,16 @@ describe('Database Connection', () => {
     it('retrieves a problem based on supplied id', done => {
       db.cypherQuery("MATCH (n) RETURN n", (err, res) => {
         if (err) throw err
-        node_id = res.data[0]._id
+        let node_id
+        res.data.forEach(node => {
+          if (!node_id && node.label === 'Problem') {
+            node_id = node._id
+          }
+        })
         request.get(TEST_URI + '/problems/' + node_id, {json: true}, (err, res, body) => {
           expect(err).to.be.null
           expect(body).to.have.property('_id', node_id)
+          expect(body).to.have.property('label', 'Problem')
           done()
         })
       })
@@ -119,6 +125,26 @@ describe('Database Connection', () => {
         expect(err).to.be.null
         expect(body).to.have.length(2)
         done()
+      })
+    })
+  })
+
+  describe('GET /concepts by id', () => {
+    it('retrieves a concept based on supplied id', done => {
+      db.cypherQuery("MATCH (n) RETURN n", (err, res) => {
+        if (err) throw err
+        let node_id
+        res.data.forEach(node => {
+          if (!node_id && node.label === 'Concept') {
+            node_id = node._id
+          }
+        })
+        request.get(TEST_URI + '/concepts/' + node_id, {json: true}, (err, res, body) => {
+          expect(err).to.be.null
+          expect(body).to.have.property('_id', node_id)
+          expect(body).to.have.property('label', 'Concept')
+          done()
+        })
       })
     })
   })
