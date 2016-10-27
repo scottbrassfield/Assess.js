@@ -4,8 +4,6 @@ module.exports = {
 
     postConcept: { id: 5, concept: 'concept 3', description: 'this is concept 3'},
 
-    postRelationship: { root_node: 1, other_node: 2, link: 'link'},
-
     seed: [
       {
         id: 1,
