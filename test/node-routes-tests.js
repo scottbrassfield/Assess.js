@@ -194,7 +194,6 @@ describe('Database Connection', () => {
           if (err) throw err;
           const query = {concept: root_concept_id}
           request.get(TEST_URI + '/concepts/relationship/preceding', {json: true, qs: query}, (err, res, body) => {
-            console.log(body.data)
             expect(err).to.be.null
             expect(body.data).to.have.length(1)
             expect(body.data[0]).to.have.property('label', 'Concept')
@@ -223,7 +222,6 @@ describe('Database Connection', () => {
           if (err) throw err;
           const query = {concept: root_concept_id}
           request.get(TEST_URI + '/concepts/relationship/subsequent', {json: true, qs: query}, (err, res, body) => {
-            console.log(body.data)
             expect(err).to.be.null
             expect(body.data).to.have.length(1)
             expect(body.data[0]).to.have.property('label', 'Concept')
@@ -234,10 +232,5 @@ describe('Database Connection', () => {
       })
     })
   })
-
-  describe ('GET /concept related to specific problem', () => {
-
-  })
-
 
 })
