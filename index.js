@@ -10,5 +10,5 @@ const db = new neo4j(DB_URL)
 const app = makeApp(db);
 
 app.listen(PORT, () => {
-  console.log('Listening')
+  console.log('Listening on ' + PORT)
 })
