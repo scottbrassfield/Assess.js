@@ -7,7 +7,7 @@ const data = require('./test-data')
 
 const TEST_PORT = 3002
 const TEST_URI = 'http://localhost:' + TEST_PORT
-const TEST_DB = process.env.TEST_DB || 'http://localhost:7474'
+const TEST_DB = process.env.NEO4J_LOCAL_DB || 'http://localhost:7474'
 
 describe('Database Connection', () => {
 
