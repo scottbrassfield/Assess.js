@@ -7,7 +7,8 @@ const data = require('./test-data')
 
 const TEST_PORT = 3002
 const TEST_URI = 'http://localhost:' + TEST_PORT
-const TEST_DB = process.env.NEO4J_LOCAL_DB || 'http://localhost:7474'
+const TEST_DB = process.env.NEO4J_LOCAL_DB || 'http://neo4j:neo4j@localhost:7474'
+console.log(TEST_DB)
 
 describe('Database Connection', () => {
 
@@ -31,6 +32,7 @@ describe('Database Connection', () => {
 
   beforeEach(done => {
     db.cypherQuery("MATCH (n) DETACH DELETE n", (err, res) => {
+      console.log(res)
       if (err) throw err
       async.each(data.seed, (node, cb) => {
         db.insertNode(node, node.label, (err, res) => {
