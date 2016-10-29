@@ -1,18 +1,17 @@
 const request = require('request')
 const { expect } = require('chai')
 const neo4j = require('node-neo4j')
+const async = require('async')
 const makeApp = require('../app')
 const data = require('./test-data')
-const async = require('async')
 
 const TEST_PORT = 3002
 const TEST_URI = 'http://localhost:' + TEST_PORT
-
-const TEST_DB_URL = 'http://assess:kLOh9xQLloypT0PbvbOS@hobby-dpmlbgdaojekgbkedmpofgol.dbs.graphenedb.com:24789'
+const TEST_DB = process.env.TEST_DB || 'http://localhost:7474'
 
 describe('Database Connection', () => {
 
-  let db = new neo4j(TEST_DB_URL)
+  let db = new neo4j(TEST_DB)
 
   before(done => {
     const app = makeApp(db)
@@ -22,6 +21,10 @@ describe('Database Connection', () => {
   })
 
   after(done => {
+    db.cypherQuery("MATCH (n) DETACH DELETE n", (err, res) => {
+      if (err) throw err
+      console.log('clear')
+    })
     server.close()
     done()
   })
