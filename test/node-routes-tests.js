@@ -8,7 +8,6 @@ const data = require('./test-data')
 const TEST_PORT = 3002
 const TEST_URI = 'http://localhost:' + TEST_PORT
 const TEST_DB = process.env.NEO4J_TEST_DB || 'http://neo4j:neo4j@localhost:7474'
-console.log(TEST_DB)
 
 describe('Database Connection', () => {
 
