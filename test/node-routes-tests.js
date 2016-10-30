@@ -7,7 +7,7 @@ const data = require('./test-data')
 
 const TEST_PORT = 3002
 const TEST_URI = 'http://localhost:' + TEST_PORT
-const TEST_DB = process.env.NEO4J_LOCAL_DB || 'http://neo4j:neo4j@localhost:7474'
+const TEST_DB = process.env.NEO4J_TEST_DB || 'http://neo4j:neo4j@localhost:7474'
 console.log(TEST_DB)
 
 describe('Database Connection', () => {
@@ -24,15 +24,13 @@ describe('Database Connection', () => {
   after(done => {
     db.cypherQuery("MATCH (n) DETACH DELETE n", (err, res) => {
       if (err) throw err
-      console.log('clear')
+      server.close()
+      done()
     })
-    server.close()
-    done()
   })
 
   beforeEach(done => {
     db.cypherQuery("MATCH (n) DETACH DELETE n", (err, res) => {
-      console.log(res)
       if (err) throw err
       async.each(data.seed, (node, cb) => {
         db.insertNode(node, node.label, (err, res) => {
@@ -192,12 +190,14 @@ describe('Database Connection', () => {
             root_concept_id = node._id
           }
           if (!related_concept_id && node.label === 'Concept') {
-            related_concept_id = node._id
+            if (root_concept_id  !== node._id) {
+              related_concept_id = node._id
+            }
           }
         })
         db.insertRelationship(root_concept_id, related_concept_id, 'RELATED_TO', {}, (err, result) => {
           if (err) throw err;
-          const query = {concept: root_concept_id}
+          const query = {concept: related_concept_id}
           request.get(TEST_URI + '/concepts/relationship/preceding', {json: true, qs: query}, (err, res, body) => {
             expect(err).to.be.null
             expect(body.data).to.have.length(1)
@@ -220,7 +220,9 @@ describe('Database Connection', () => {
             root_concept_id = node._id
           }
           if (!related_concept_id && node.label === 'Concept') {
-            related_concept_id = node._id
+            if (root_concept_id  !== node._id) {
+              related_concept_id = node._id
+            }
           }
         })
         db.insertRelationship(root_concept_id, related_concept_id, 'RELATED_TO', {}, (err, result) => {
