@@ -23,8 +23,8 @@ const neo4j = require('node-neo4j')
 
           if (err) throw err
 
-          //Connect objects to data types
-          db.cypherQuery("MATCH (x:Concept {title: 'data types'}) WITH x MATCH (y:Concept {title: 'objects'}) WITH x,y MERGE (x)-[:PRECEDES]-(y)", (err, result) => {
+          //Connect data types to objects and objects to functions
+          db.cypherQuery("MATCH (x:Concept {title: 'data types'}) WITH x MATCH (y:Concept {title: 'objects'}) WITH x,y MERGE (x)-[:PRECEDES]-(y) WITH y MATCH (z:Concept {title: 'functions'}) WITH y,z MERGE (y)-[:PRECEDES]-(z)", (err, result) => {
             if (err) throw err
           })
         })
