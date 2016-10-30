@@ -27,7 +27,7 @@ module.exports = function(db) {
 
   router.get('/relationship/preceding', (req, res) => {
     const concept = parseInt(req.query.concept)
-    db.cypherQuery("START concept = node({id}) MATCH (concept)<-[:RELATED_TO]-(concept) RETURN concept", {id: concept}, (err, result) => {
+    db.cypherQuery("START concept = node({id}) MATCH (concept)<-[:RELATED_TO]-(preceding) RETURN preceding", {id: concept}, (err, result) => {
       if (err) throw err;
       res.json(result)
     })
@@ -35,7 +35,7 @@ module.exports = function(db) {
 
   router.get('/relationship/subsequent', (req, res) => {
     const concept = parseInt(req.query.concept)
-    db.cypherQuery("START concept = node({id}) MATCH (concept)-[:RELATED_TO]->(concept) RETURN concept", {id: concept}, (err, result) => {
+    db.cypherQuery("START concept = node({id}) MATCH (concept)-[:RELATED_TO]->(subsequent) RETURN subsequent", {id: concept}, (err, result) => {
       if (err) throw err;
       res.json(result)
     })
