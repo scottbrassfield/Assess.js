@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha",
     "tdd": "mocha --watch",
-    "start": "node .",
+    "start": "node ./fixtures && node .",
     "watch": "nodemon ."
   },
   "repository": {
