@@ -1,4 +1,4 @@
-const makeApp = require('../app')
+const makeApp = require('../src/app')
 const request = require('request')
 const { expect } = require('chai')
 

@@ -2,7 +2,7 @@ const request = require('request')
 const { expect } = require('chai')
 const neo4j = require('node-neo4j')
 const async = require('async')
-const makeApp = require('../app')
+const makeApp = require('../src/app')
 const data = require('./test-data')
 
 const TEST_PORT = 3002
