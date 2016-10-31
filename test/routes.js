@@ -2,7 +2,7 @@ const request = require('request')
 const { expect } = require('chai')
 const neo4j = require('node-neo4j')
 const async = require('async')
-const makeApp = require('../src/app')
+const makeApp = require('../server/app')
 const data = require('./test-data')
 
 const TEST_PORT = 3002
@@ -12,6 +12,7 @@ const TEST_DB = process.env.NEO4J_TEST_DB || 'http://neo4j:neo4j@localhost:7474'
 describe('Database Connection', () => {
 
   let db = new neo4j(TEST_DB)
+  let server
 
   before(done => {
     const app = makeApp(db)
