@@ -44,3 +44,8 @@ jspm_packages
 .stylelintrc
 
 knowledge-state.md
+
+.gitignore
+
+bundle.js
+bundle.js.map
