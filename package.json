@@ -2,11 +2,11 @@
   "name": "Assess.js",
   "version": "1.0.0",
   "description": "An adaptive knowledge assessment for JavaScript learners",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "mocha",
     "tdd": "mocha --watch",
-    "start": "node ./fixtures && node .",
+    "start": "node ./src/fixtures && node ./src/index.js",
     "watch": "nodemon ."
   },
   "repository": {
