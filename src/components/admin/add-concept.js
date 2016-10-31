@@ -2,11 +2,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { reduxForm, Field, FieldArray } from 'redux-form'
 import { addConcept } from '../../actions'
+import { Input } from 'semantic-ui-react'
 
 
-const renderInput = ({input, style}) => (
-  <div style={{display:'inline-block'}}>
-    <input type='text' {...input} style={style}/>
+const renderInput = ({input, style, label}) => (
+  <div style={style}>
+    <label style={{fontSize: '20px'}}>{label}</label>
+    <Input type='text' {...input} style={style}/>
   </div>
 )
 
@@ -19,36 +21,38 @@ const renderConcepts = ({ input, concepts }) => (
 )
 
 const renderRelationships = ({ input }) => (
-  <select {...input}>
+  <select {...input} style={{marginLeft: '10px'}}>
     <option value='precedes'>precedes</option>
     <option value='follows'>follows</option>
   </select>
 )
 
 const renderRelatedConcepts = ({ fields, concepts }) => (
-  <ul>
-    <li>
-    <button type='button' onClick={() => fields.push({})}>Add Relationship</button>
-    </li>
-    {fields.map((rel, index) =>
-      <li key={index}>
-        <Field
-          name={`${rel}.concept`}
-          component={renderConcepts}
-          concepts={concepts} />
-        <Field
-          name={`${rel}.relationship`}
-          component={renderRelationships}
-          concepts={concepts} />
-        <button
-          type='button'
-          onClick={() => fields.remove(index)}
-          style={{display: 'inline-block'}}>
-          Remove
-        </button>
-      </li>
-    )}
-  </ul>
+  <div>
+    <div style={{marginTop: '15px'}}>
+      <button type='button' onClick={() => fields.push({})}>Add Relationship</button>
+    </div>
+    <div style={{marginTop: '10px'}}>
+      {fields.map((rel, index) =>
+        <div key={index}
+          style={{ marginTop: '5px'}}>
+          <Field
+            name={`${rel}.concept`}
+            component={renderConcepts}
+            concepts={concepts} />
+          <Field
+            name={`${rel}.relationship`}
+            component={renderRelationships}
+            concepts={concepts} />
+          <button
+            onClick={() => fields.remove(index)}
+            style={{display: 'inline-block', marginLeft: '10px'}}>
+            Remove
+          </button>
+        </div>
+      )}
+      </div>
+  </div>
 )
 
 let AddConceptForm = ({ handleSubmit, concepts }) => {
@@ -58,15 +62,14 @@ let AddConceptForm = ({ handleSubmit, concepts }) => {
       <form onSubmit={handleSubmit}>
         <div>
           <div style={{display: 'inline-block'}}>
-            <label style={{display: 'block'}}>Concept Name</label>
-            <Field style={{display: 'block'}} name='conceptName' component={renderInput} />
+            <Field style={{display: 'block'}} name='conceptName' component={renderInput} label='Concept Name'/>
           </div>
-          <div style={{display: 'inline-block'}}>
-            <label style={{display: 'block'}}>Description</label>
-            <Field style={{display: 'block'}} name='conceptDescr' component={renderInput} />
+          <div style={{display: 'inline-block', marginLeft: '10px'}}>
+            <Field style={{display: 'block'}} name='conceptDescr' component={renderInput} label='Description' />
           </div>
         </div>
         <FieldArray name='relatedConcepts' component={renderRelatedConcepts} concepts={concepts}/>
+        <button style={{marginTop: '15px'}} type='submit'>Submit</button>
       </form>
     </div>
   )
