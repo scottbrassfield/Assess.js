@@ -1,14 +1,12 @@
-const express = require('express')
-const neo4j = require('node-neo4j')
-const makeApp = require('./app')
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
+import App from './components/app'
+import store from './store'
 
-const DB_URL = process.env.GRAPHENEDB_URL
-const PORT = process.env.PORT || 1337
-const db = new neo4j(DB_URL)
-
-
-const app = makeApp(db);
-
-app.listen(PORT, () => {
-  console.log('Listening on ' + PORT)
-})
+ReactDOM.render(
+  <Provider store={ store }>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+)
