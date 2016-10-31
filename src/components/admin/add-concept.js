@@ -1,5 +1,6 @@
 import React from 'react'
-import { reduxForm, Field } from 'redux-form'
+import { reduxForm, Field, FieldArray } from 'redux-form'
+import { addConcept } from '../../actions'
 
 
 const renderInput = ({input, style}) => (
@@ -8,19 +9,45 @@ const renderInput = ({input, style}) => (
   </div>
 )
 
-const renderConceptList = () => (
-  <select>
-    <option>Concept 1</option>
+const renderConcepts = ({ input }) => (
+  <select {...input}>
+    <option value='concept1'>Concept 1</option>
+    <option value='concept2'>Concept 2</option>
   </select>
 )
 
-const renderRelationshipList = () => (
-  <select>
-    <option>Concept 1</option>
+const renderRelationships = ({ input }) => (
+  <select {...input}>
+    <option value='precedes'>precedes</option>
+    <option value='follows'>follows</option>
   </select>
 )
 
-const AddConceptForm = ({handleSubmit}) => {
+const renderRelatedConcepts = ({ fields }) => (
+  <ul>
+    <li>
+    <button type='button' onClick={() => fields.push({})}>Add Relationship</button>
+    </li>
+    {fields.map((rel, index) =>
+      <li key={index}>
+        <Field
+          name={`${rel}.concept`}
+          component={renderConcepts} />
+        <Field
+          name={`${rel}.relationship`}
+          component={renderRelationships} />
+        <button
+          type='button'
+          onClick={() => fields.remove(index)}
+          style={{display: 'inline-block'}}>
+          Remove
+        </button>
+      </li>
+    )}
+  </ul>
+)
+
+const AddConceptForm = ({ handleSubmit }) => {
   return (
     <div>
       <h2>Add a concept</h2>
@@ -35,18 +62,7 @@ const AddConceptForm = ({handleSubmit}) => {
             <Field style={{display: 'block'}} name='conceptDescr' component={renderInput} />
           </div>
         </div>
-        <div>
-          <div style={{display: 'inline-block'}}>
-            <div>
-              <label style={{display: 'block'}}>Related Concept</label>
-              <Field style={{display: 'block'}} name='relConceptName' component={renderConceptList} />
-            </div>
-            <div>
-              <label style={{display: 'block'}}>Relationship</label>
-              <Field style={{display: 'block'}} name='relationship' component={renderRelationshipList} />
-            </div>
-          </div>
-        </div>
+        <FieldArray name='relatedConcepts' component={renderRelatedConcepts} />
       </form>
     </div>
   )
@@ -55,9 +71,10 @@ const AddConceptForm = ({handleSubmit}) => {
 export default reduxForm({
   form:'addConcept',
   onSubmit: (values, dispatch) => {
-    dispatch({
-      type: 'ADD_CONCEPT',
-      values
-    })
+    dispatch(addConcept(values))
   }
 })(AddConceptForm)
+
+// { concepts.map(concept =>
+//     <option>{concept.name}</option>
+// )}
