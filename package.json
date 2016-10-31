@@ -25,11 +25,27 @@
   "homepage": "https://github.com/scottbrassfield/Assess.js#readme",
   "dependencies": {
     "async": "^2.1.2",
+    "babel-core": "^6.18.0",
+    "babel-loader": "^6.2.7",
+    "babel-plugin-transform-object-rest-spread": "^6.16.0",
     "body-parser": "^1.15.2",
+    "bootstrap": "^4.0.0-alpha.5",
+    "css-loader": "^0.25.0",
     "express": "^4.14.0",
+    "extract-text-webpack-plugin": "^1.0.1",
     "neo4j": "^2.0.0-RC2",
     "node-neo4j": "^2.0.3",
-    "request": "^2.76.0"
+    "node-sass": "^3.10.1",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "react-redux": "^4.4.5",
+    "redux": "^3.6.0",
+    "redux-form": "^6.1.1",
+    "redux-thunk": "^2.1.0",
+    "request": "^2.76.0",
+    "sass-loader": "^4.0.2",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.13.3"
   },
   "devDependencies": {
     "babel-eslint": "^7.0.0",
