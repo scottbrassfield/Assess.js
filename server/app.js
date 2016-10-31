@@ -7,7 +7,7 @@ const relationshipsRoutes = require('../routes/relationships-routes')
 module.exports = function makeApp(db) {
 
   const app = express()
-    .use(express.static('public'))
+    .use(express.static('dist/public'))
     .use(bodyParser.json())
     .use('/problems', problemsRoutes(db))
     .use('/concepts', conceptsRoutes(db))
