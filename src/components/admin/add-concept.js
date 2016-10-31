@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { reduxForm, Field, FieldArray } from 'redux-form'
 import { addConcept } from '../../actions'
 
@@ -9,10 +10,11 @@ const renderInput = ({input, style}) => (
   </div>
 )
 
-const renderConcepts = ({ input }) => (
+const renderConcepts = ({ input, concepts }) => (
   <select {...input}>
-    <option value='concept1'>Concept 1</option>
-    <option value='concept2'>Concept 2</option>
+    { concepts.map((concept, index) =>
+      <option key={index}>{concept}</option>
+    )}
   </select>
 )
 
@@ -23,7 +25,7 @@ const renderRelationships = ({ input }) => (
   </select>
 )
 
-const renderRelatedConcepts = ({ fields }) => (
+const renderRelatedConcepts = ({ fields, concepts }) => (
   <ul>
     <li>
     <button type='button' onClick={() => fields.push({})}>Add Relationship</button>
@@ -32,10 +34,12 @@ const renderRelatedConcepts = ({ fields }) => (
       <li key={index}>
         <Field
           name={`${rel}.concept`}
-          component={renderConcepts} />
+          component={renderConcepts}
+          concepts={concepts} />
         <Field
           name={`${rel}.relationship`}
-          component={renderRelationships} />
+          component={renderRelationships}
+          concepts={concepts} />
         <button
           type='button'
           onClick={() => fields.remove(index)}
@@ -47,7 +51,7 @@ const renderRelatedConcepts = ({ fields }) => (
   </ul>
 )
 
-const AddConceptForm = ({ handleSubmit }) => {
+let AddConceptForm = ({ handleSubmit, concepts }) => {
   return (
     <div>
       <h2>Add a concept</h2>
@@ -62,19 +66,31 @@ const AddConceptForm = ({ handleSubmit }) => {
             <Field style={{display: 'block'}} name='conceptDescr' component={renderInput} />
           </div>
         </div>
-        <FieldArray name='relatedConcepts' component={renderRelatedConcepts} />
+        <FieldArray name='relatedConcepts' component={renderRelatedConcepts} concepts={concepts}/>
       </form>
     </div>
   )
 }
 
-export default reduxForm({
+AddConceptForm = reduxForm({
   form:'addConcept',
   onSubmit: (values, dispatch) => {
     dispatch(addConcept(values))
   }
 })(AddConceptForm)
 
-// { concepts.map(concept =>
-//     <option>{concept.name}</option>
-// )}
+const conceptsToArray = ({concepts: { byId }}) => {
+  let conceptTitles = [];
+  for (var prop in byId) {
+    conceptTitles.push(byId[prop].title)
+  }
+  return conceptTitles
+}
+
+const mapState = (state) => {
+  return {
+    concepts: conceptsToArray(state)
+  }
+}
+
+export default connect(mapState)(AddConceptForm)

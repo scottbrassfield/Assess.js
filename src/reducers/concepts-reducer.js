@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import { loadConcepts } from './util'
 
 import {
   ADD_CONCEPT,
@@ -19,7 +20,9 @@ const byId = (state={}, action) => {
     case ADD_CONCEPT:
       return state
     case LOAD_CONCEPTS:
-      return state
+      return {...state,
+        ...loadConcepts(undefined, action)
+      }
     default:
       return state
   }
@@ -30,7 +33,7 @@ const allIds = (state=[], action) => {
     case ADD_CONCEPT:
       return state
     case LOAD_CONCEPTS:
-      return state
+      return Object.keys(loadConcepts(undefined, action))
     default:
       return state
   }

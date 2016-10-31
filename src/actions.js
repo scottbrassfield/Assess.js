@@ -16,3 +16,15 @@ export const loadConcepts = (concepts) => {
     concepts
   }
 }
+
+export const getConcepts = () => {
+  return dispatch => {
+    return fetch('/concepts')
+      .then( res => {
+        return res.json()
+      })
+      .then( concepts => {
+        dispatch(loadConcepts(concepts))
+      })
+  }
+}
