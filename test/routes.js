@@ -1,8 +1,10 @@
+/*global describe, it, before, after, beforeEach*/
+
 const request = require('request')
 const { expect } = require('chai')
 const neo4j = require('node-neo4j')
 const async = require('async')
-const makeApp = require('../app')
+const makeApp = require('../server/app')
 const data = require('./test-data')
 
 const TEST_PORT = 3002
@@ -12,6 +14,7 @@ const TEST_DB = process.env.NEO4J_TEST_DB || 'http://neo4j:neo4j@localhost:7474'
 describe('Database Connection', () => {
 
   let db = new neo4j(TEST_DB)
+  let server
 
   before(done => {
     const app = makeApp(db)
@@ -21,7 +24,7 @@ describe('Database Connection', () => {
   })
 
   after(done => {
-    db.cypherQuery("MATCH (n) DETACH DELETE n", (err, res) => {
+    db.cypherQuery("MATCH (n) DETACH DELETE n", (err) => {
       if (err) throw err
       server.close()
       done()
@@ -29,10 +32,10 @@ describe('Database Connection', () => {
   })
 
   beforeEach(done => {
-    db.cypherQuery("MATCH (n) DETACH DELETE n", (err, res) => {
+    db.cypherQuery("MATCH (n) DETACH DELETE n", (err) => {
       if (err) throw err
       async.each(data.seed, (node, cb) => {
-        db.insertNode(node, node.label, (err, res) => {
+        db.insertNode(node, node.label, (err) => {
           if (err) { cb(err) }
           else { cb() }
         }) }, () => {
@@ -44,7 +47,7 @@ describe('Database Connection', () => {
   describe('POST /problems', () => {
     it('inserts problem node into database', done => {
       request.post({
-        uri: TEST_URI + '/problems',
+        uri: TEST_URI + '/api/problems',
         json: true,
         body: data.postProblem
       }, (err, res, body) => {
@@ -58,19 +61,41 @@ describe('Database Connection', () => {
   describe('POST /concepts', () => {
     it('inserts concept node into database', done => {
       request.post({
-        uri: TEST_URI + '/concepts',
+        uri: TEST_URI + '/api/concepts',
         json: true,
         body: data.postConcept
       }, (err, res, body) => {
         expect(err).to.be.null
-        expect(body).to.have.property('concept')
+        expect(body).to.have.property('title')
         done()
       })
     })
   })
 
-  describe('POST /relationships', () => {
-    it('inserts relationship between nodes into database', done => {
+  describe('POST /relationships/titles', () => {
+    it('inserts relationship(s) between nodes into database - based on title', done => {
+
+      let root_node, other_node
+
+      db.cypherQuery("MATCH (n) RETURN n", (err, res) => {
+        if (err) throw err
+        root_node = res.data[0].title
+        other_node = res.data[1].title
+        request.post({
+          uri: TEST_URI + '/api/relationships/titles',
+          json: true,
+          body: [{root_node: root_node, other_node: other_node, link: 'RELATED_TO' }]
+        }, (err, res, body) => {
+          expect(err).to.be.null
+          expect(body[0]).to.have.property('_type', 'RELATED_TO')
+          done()
+        })
+      })
+    })
+  })
+
+  describe('POST /relationships/ids', () => {
+    it('inserts relationship(s) between nodes into database - based on ids', done => {
 
       let root_node, other_node
 
@@ -79,21 +104,22 @@ describe('Database Connection', () => {
         root_node = res.data[0]._id
         other_node = res.data[1]._id
         request.post({
-          uri: TEST_URI + '/relationships',
+          uri: TEST_URI + '/api/relationships/ids',
           json: true,
-          body: {root_node: root_node, other_node: other_node, link: 'RELATED_TO' }
+          body: [{root_node: root_node, other_node: other_node, link: 'RELATED_TO' }]
         }, (err, res, body) => {
           expect(err).to.be.null
-          expect(body).to.have.property('_type', 'RELATED_TO')
+          expect(body[0]).to.have.property('_type', 'RELATED_TO')
           done()
         })
       })
     })
   })
 
+
   describe('GET /problems', () => {
     it('retrieves all problem nodes in database', done => {
-      request.get(TEST_URI + '/problems', {json: true}, (err, res, body) => {
+      request.get(TEST_URI + '/api/problems', {json: true}, (err, res, body) => {
         expect(err).to.be.null
         expect(body).to.have.length(1)
         done()
@@ -111,7 +137,7 @@ describe('Database Connection', () => {
             node_id = node._id
           }
         })
-        request.get(TEST_URI + '/problems/node/' + node_id, {json: true}, (err, res, body) => {
+        request.get(TEST_URI + '/api/problems/node/' + node_id, {json: true}, (err, res, body) => {
           expect(err).to.be.null
           expect(body).to.have.property('_id', node_id)
           expect(body).to.have.property('label', 'Problem')
@@ -134,10 +160,10 @@ describe('Database Connection', () => {
             concept_id = node._id
           }
         })
-        db.insertRelationship(problem_id, concept_id, 'RELATED_TO', {}, (err, result) => {
+        db.insertRelationship(problem_id, concept_id, 'RELATED_TO', {}, (err) => {
           if (err) throw err;
           const query = {concept: concept_id}
-          request.get(TEST_URI + '/problems/relationship', {json: true, qs: query}, (err, res, body) => {
+          request.get(TEST_URI + '/api/problems/relationship', {json: true, qs: query}, (err, res, body) => {
             expect(err).to.be.null
             expect(body.data).to.have.length(1)
             expect(body.data[0]).to.have.property('label', 'Problem')
@@ -151,7 +177,7 @@ describe('Database Connection', () => {
 
   describe('GET /concepts', () => {
     it('retrieves all concept nodes in database', done => {
-      request.get(TEST_URI + '/concepts', {json: true}, (err, res, body) => {
+      request.get(TEST_URI + '/api/concepts', {json: true}, (err, res, body) => {
         expect(err).to.be.null
         expect(body).to.have.length(2)
         done()
@@ -169,7 +195,7 @@ describe('Database Connection', () => {
             node_id = node._id
           }
         })
-        request.get(TEST_URI + '/concepts/node/' + node_id, {json: true}, (err, res, body) => {
+        request.get(TEST_URI + '/api/concepts/node/' + node_id, {json: true}, (err, res, body) => {
           expect(err).to.be.null
           expect(body).to.have.property('_id', node_id)
           expect(body).to.have.property('label', 'Concept')
@@ -197,7 +223,7 @@ describe('Database Connection', () => {
         db.insertRelationship(root_concept_id, related_concept_id, 'RELATED_TO', {}, (err, result) => {
           if (err) throw err;
           const query = {concept: related_concept_id}
-          request.get(TEST_URI + '/concepts/relationship/preceding', {json: true, qs: query}, (err, res, body) => {
+          request.get(TEST_URI + '/api/concepts/relationship/preceding', {json: true, qs: query}, (err, res, body) => {
             expect(err).to.be.null
             expect(body.data).to.have.length(1)
             expect(body.data[0]).to.have.property('label', 'Concept')
@@ -227,7 +253,7 @@ describe('Database Connection', () => {
         db.insertRelationship(root_concept_id, related_concept_id, 'RELATED_TO', {}, (err, result) => {
           if (err) throw err;
           const query = {concept: root_concept_id}
-          request.get(TEST_URI + '/concepts/relationship/subsequent', {json: true, qs: query}, (err, res, body) => {
+          request.get(TEST_URI + '/api/concepts/relationship/subsequent', {json: true, qs: query}, (err, res, body) => {
             expect(err).to.be.null
             expect(body.data).to.have.length(1)
             expect(body.data[0]).to.have.property('label', 'Concept')

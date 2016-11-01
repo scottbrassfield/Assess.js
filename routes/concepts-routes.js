@@ -3,14 +3,14 @@ const Router = require('express').Router;
 module.exports = function(db) {
   const router = new Router();
 
-  router.post('/', (req, res, next) => {
-    db.insertNode(req.body, (err, result) => {
+  router.post('/', (req, res) => {
+    db.insertNode(req.body, 'Concept', (err, result) => {
       if (err) throw err;
       res.json(result);
     })
   })
 
-  router.get('/', (req, res, next) => {
+  router.get('/', (req, res) => {
     db.readNodesWithLabel('Concept', (err, result) => {
       if (err) throw err
       res.json(result)
