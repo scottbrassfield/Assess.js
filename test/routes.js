@@ -66,14 +66,36 @@ describe('Database Connection', () => {
         body: data.postConcept
       }, (err, res, body) => {
         expect(err).to.be.null
-        expect(body).to.have.property('concept')
+        expect(body).to.have.property('title')
         done()
       })
     })
   })
 
-  describe('POST /relationships', () => {
-    it('inserts relationship between nodes into database', done => {
+  describe('POST /relationships/titles', () => {
+    it('inserts relationship(s) between nodes into database - based on title', done => {
+
+      let root_node, other_node
+
+      db.cypherQuery("MATCH (n) RETURN n", (err, res) => {
+        if (err) throw err
+        root_node = res.data[0].title
+        other_node = res.data[1].title
+        request.post({
+          uri: TEST_URI + '/api/relationships/titles',
+          json: true,
+          body: [{root_node: root_node, other_node: other_node, link: 'RELATED_TO' }]
+        }, (err, res, body) => {
+          expect(err).to.be.null
+          expect(body[0]).to.have.property('_type', 'RELATED_TO')
+          done()
+        })
+      })
+    })
+  })
+
+  describe('POST /relationships/ids', () => {
+    it('inserts relationship(s) between nodes into database - based on ids', done => {
 
       let root_node, other_node
 
@@ -82,17 +104,18 @@ describe('Database Connection', () => {
         root_node = res.data[0]._id
         other_node = res.data[1]._id
         request.post({
-          uri: TEST_URI + '/api/relationships',
+          uri: TEST_URI + '/api/relationships/ids',
           json: true,
-          body: {root_node: root_node, other_node: other_node, link: 'RELATED_TO' }
+          body: [{root_node: root_node, other_node: other_node, link: 'RELATED_TO' }]
         }, (err, res, body) => {
           expect(err).to.be.null
-          expect(body).to.have.property('_type', 'RELATED_TO')
+          expect(body[0]).to.have.property('_type', 'RELATED_TO')
           done()
         })
       })
     })
   })
+
 
   describe('GET /problems', () => {
     it('retrieves all problem nodes in database', done => {
