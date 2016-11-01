@@ -6,12 +6,12 @@ const relationshipsRoutes = require('../routes/relationships-routes')
 
 module.exports = function makeApp(db) {
 
-  const app = express()
+  const app = express() 
     .use(express.static('dist/public'))
     .use(bodyParser.json())
-    .use('/problems', problemsRoutes(db))
-    .use('/concepts', conceptsRoutes(db))
-    .use('/relationships', relationshipsRoutes(db))
+    .use('/api/problems', problemsRoutes(db))
+    .use('/api/concepts', conceptsRoutes(db))
+    .use('/api/relationships', relationshipsRoutes(db))
 
   return app
 
