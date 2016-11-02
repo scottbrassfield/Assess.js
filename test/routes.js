@@ -160,7 +160,7 @@ describe('Database Connection', () => {
             concept_id = node._id
           }
         })
-        db.insertRelationship(problem_id, concept_id, 'RELATED_TO', {}, (err) => {
+        db.insertRelationship(problem_id, concept_id, 'TESTS', {}, (err) => {
           if (err) throw err;
           const query = {concept: concept_id}
           request.get(TEST_URI + '/api/problems/relationship', {json: true, qs: query}, (err, res, body) => {
@@ -220,7 +220,7 @@ describe('Database Connection', () => {
             }
           }
         })
-        db.insertRelationship(root_concept_id, related_concept_id, 'RELATED_TO', {}, (err, result) => {
+        db.insertRelationship(root_concept_id, related_concept_id, 'PRECEDES', {}, (err, result) => {
           if (err) throw err;
           const query = {concept: related_concept_id}
           request.get(TEST_URI + '/api/concepts/relationship/preceding', {json: true, qs: query}, (err, res, body) => {
@@ -250,7 +250,7 @@ describe('Database Connection', () => {
             }
           }
         })
-        db.insertRelationship(root_concept_id, related_concept_id, 'RELATED_TO', {}, (err, result) => {
+        db.insertRelationship(root_concept_id, related_concept_id, 'PRECEDES', {}, (err, result) => {
           if (err) throw err;
           const query = {concept: root_concept_id}
           request.get(TEST_URI + '/api/concepts/relationship/subsequent', {json: true, qs: query}, (err, res, body) => {
@@ -265,4 +265,30 @@ describe('Database Connection', () => {
     })
   })
 
+  describe ('GET /concepts - initial', () => {
+    it ('retrieves all concepts that have no preceding concepts', done => {
+      db.cypherQuery("MATCH (n) RETURN n", (err, result) => {
+        if (err) throw err;
+        let root_concept_id, related_concept_id
+        result.data.forEach(node => {
+          if (!root_concept_id && node.label === 'Concept') {
+            root_concept_id = node._id
+          }
+          if (!related_concept_id && node.label === 'Concept') {
+            if (root_concept_id  !== node._id) {
+              related_concept_id = node._id
+            }
+          }
+        })
+        db.insertRelationship(root_concept_id, related_concept_id, 'PRECEDES', {}, (err) => {
+          if (err) throw err;
+          request.get(TEST_URI + '/api/concepts/initial', {json: true}, (err, res, body) => {
+            expect(err).to.be.null
+            expect(body.data[0]).to.have.property('_id', root_concept_id)
+            done()
+          })
+        })
+      })
+    })
+  })
 })
