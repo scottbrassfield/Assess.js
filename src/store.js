@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import rootReducer from './reducers/root-reducer'
-import { getConcepts } from './actions'
+import { getAllConcepts } from './actions'
 
 let store = createStore(
   rootReducer,
@@ -9,6 +9,6 @@ let store = createStore(
   applyMiddleware(thunk)
 )
 
-store.dispatch(getConcepts())
+store.dispatch(getAllConcepts())
 
 export default store

@@ -4,7 +4,7 @@ module.exports = function(db) {
   const router = new Router();
 
   router.post('/', (req, res) => {
-    db.insertNode(req.body, (err, result) => {
+    db.insertNode(req.body, 'Problem', (err, result) => {
       if (err) throw err;
       res.json(result);
     })
