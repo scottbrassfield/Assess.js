@@ -27,7 +27,7 @@ module.exports = function(db) {
 
   router.get('/relationship', (req, res) => {
     const concept = parseInt(req.query.concept)
-    db.cypherQuery("START concept = node({id}) MATCH (concept)<-[:RELATED_TO]-(problem) RETURN problem", {id: concept}, (err, result) => {
+    db.cypherQuery("START concept = node({id}) MATCH (concept)<-[:TESTS]-(problem) RETURN problem", {id: concept}, (err, result) => {
       if (err) throw err;
       res.json(result)
     })

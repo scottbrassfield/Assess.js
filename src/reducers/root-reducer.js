@@ -1,10 +1,12 @@
 import { combineReducers } from 'redux'
 import { reducer as formReducer } from 'redux-form'
-import concepts from './concepts-reducer'
+import allConcepts from './concepts-reducer'
+import assessment from './assessment-reducer'
 
 const rootReducer = combineReducers({
   form: formReducer,
-  concepts
+  allConcepts,
+  assessment
 })
 
 export default rootReducer

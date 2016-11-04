@@ -6,7 +6,7 @@ import {
   LOAD_CONCEPTS
 } from '../actions.js'
 
-const concept = (state={}, action) => {
+const concept = (state = {}, action) => {
   switch(action.type) {
     case ADD_CONCEPT:
       return state
@@ -15,7 +15,7 @@ const concept = (state={}, action) => {
   }
 }
 
-const byId = (state={}, action) => {
+const byId = (state = {}, action) => {
   switch(action.type) {
     case ADD_CONCEPT:
       return state
@@ -28,7 +28,7 @@ const byId = (state={}, action) => {
   }
 }
 
-const allIds = (state=[], action) => {
+const allIds = (state = [], action) => {
   switch(action.type) {
     case ADD_CONCEPT:
       return state
@@ -39,9 +39,9 @@ const allIds = (state=[], action) => {
   }
 }
 
-const concepts = combineReducers({
+const allConcepts = combineReducers({
   byId,
   allIds
 })
 
-export default concepts
+export default allConcepts

@@ -49,7 +49,7 @@ AddProblemForm = reduxForm({
   }
 })(AddProblemForm)
 
-const conceptsToArray = ({concepts: { byId }}) => {
+const conceptsToArray = ({allConcepts: { byId }}) => {
   let conceptTitles = [];
   for (var prop in byId) {
     conceptTitles.push(byId[prop].title)
