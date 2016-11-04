@@ -1,12 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import Problem from './problem'
-import { startAssessment } from '../../actions'
 
-const Assessment = ({ dispatch, ...rest }) => (
+const Assessment = (props) => (
   <div>
-    <button onClick={() => dispatch(startAssessment())}>Begin Assessment</button>
-    <Problem {...rest} />
+    <Problem {...props} />
   </div>
 )
 
