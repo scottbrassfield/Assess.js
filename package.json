@@ -11,8 +11,9 @@
     "express": "node ./server/index.js",
     "build": "webpack --config webpack.dev.config.js",
     "dev": "npm run express-dev & webpack-dev-server --config webpack.dev.config.js",
-    "start": "npm run express && webpack --config webpack.prod.config.js",
-    "server": "webpack-dev-server --config webpack.dev.config.js"
+    "server": "webpack-dev-server --config webpack.dev.config.js",
+    "start": "node ./server/index.js",
+    "postinstall": "webpack -p --config webpack.prod.config.js --define process.env.NODE_ENV='\"production\"' --progress --colors",
   },
   "repository": {
     "type": "git",
