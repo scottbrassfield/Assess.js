@@ -179,7 +179,7 @@ describe('Database Connection', () => {
     it('retrieves all concept nodes in database', done => {
       request.get(TEST_URI + '/api/concepts', {json: true}, (err, res, body) => {
         expect(err).to.be.null
-        expect(body).to.have.length(2)
+        expect(body).to.have.length(3)
         done()
       })
     })
@@ -291,4 +291,41 @@ describe('Database Connection', () => {
       })
     })
   })
+
+  describe ('GET /concepts - parallel', () => {
+
+    it ('receives all concepts that have the same subsequent concept(s)', done => {
+      db.cypherQuery("MATCH (n) RETURN n", (err, result) => {
+        if (err) throw err;
+        let root_concept_id, related_concept_id, other_root_concept_id
+        result.data.forEach(node => {
+          if (node.title === 'concept 1') {
+            root_concept_id = node._id
+          }
+          if (node.title === 'concept 2') {
+            other_root_concept_id = node._id
+          }
+          if (node.title === 'concept 3') {
+            related_concept_id = node._id
+          }
+        })
+        db.insertRelationship(root_concept_id, related_concept_id, 'PRECEDES', {}, (err) => {
+          if (err) throw err;
+          db.insertRelationship(other_root_concept_id, related_concept_id, 'PRECEDES', {}, (err) => {
+            if (err) throw err
+            const query = { concept: root_concept_id}
+            request.get(TEST_URI + '/api/concepts/relationship/parallel',
+              {json: true, qs: query},
+              (err, res, body) => {
+              expect(err).to.be.null
+              expect(body.data).to.have.length(1)
+              expect(body.data[0]).to.have.property('_id', other_root_concept_id)
+              done()
+            })
+          })
+        })
+      })
+    })
+  })
+
 })
