@@ -7,7 +7,9 @@ import { AppContainer } from 'react-hot-loader'
 
 ReactDOM.render(
   <Provider store={ store }>
-    <App />
+    <AppContainer>
+      <App />
+    </AppContainer>
   </Provider>,
   document.getElementById('root')
 )
