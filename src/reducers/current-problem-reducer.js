@@ -1,30 +1,33 @@
-import { combineReducers } from 'redux'
+// import { combineReducers } from 'redux'
 
 import {
   LOAD_CURRENT_PROBLEM,
-  UPDATE_CURRENT_PROBLEM
 } from '../actions'
 
-const details = (state = {}, action) => {
+const currentProblem = (state = {}, action) => {
   switch(action.type) {
     case LOAD_CURRENT_PROBLEM:
-      return {...state, ...action.details}
+      return {...state, ...action.problem}
     default:
       return state
   }
 }
 
-const status = (state = '', action) => {
-  switch(action.type) {
-    case UPDATE_CURRENT_PROBLEM:
-      return state
-    default:
-      return state
-  }
-}
-
-
-export default combineReducers({
-  details,
-  status
-})
+export default currentProblem
+//
+// const status = (state = '', action) => {
+//   switch(action.type) {
+//     case UPDATE_CURRENT_PROBLEM:
+//       return state = action.status
+//     case LOAD_CURRENT_PROBLEM:
+//       return state = ''
+//     default:
+//       return state
+//   }
+// }
+//
+//
+// export default combineReducers({
+//   details,
+//   status
+// })

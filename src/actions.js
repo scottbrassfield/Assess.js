@@ -3,17 +3,17 @@
 export const ADD_CONCEPT = 'ADD_CONCEPT'
 export const LOAD_CONCEPTS = 'LOAD_CONCEPTS'
 export const ADD_PROBLEM = 'ADD_PROBLEM'
-export const ADD_CONCEPT_GROUP = 'ADD_CONCEPT_GROUP'
+export const NEW_CONCEPT = 'NEW_CONCEPT'
 export const START_ASSESSMENT = 'START_ASSESSMENT'
 export const END_ASSESSMENT = 'END_ASSESSMENT'
-export const CORRECT_ANSWER = 'CORRECT_ANSWER'
-export const INCORRECT_ANSWER = 'INCORRECT_ANSWER'
-export const UNDERSTOOD_CONCEPT = 'UNDERSTOOD_CONCEPT'
-export const DEVELOPING_CONCEPT = 'DEVELOPING_CONCEPT'
-export const NEW_CONCEPT = 'NEW_CONCEPT'
+export const UPDATE_CURRENT_PROBLEM = 'UPDATE_CURRENT_PROBLEM'
+export const UPDATE_CURRENT_CONCEPT = 'UPDATE_CURRENT_CONCEPT'
+export const UPDATE_TESTED_CONCEPTS = 'UPDATE_TESTED_CONCEPTS'
+export const UPDATE_TESTED_PROBLEMS = 'UPDATE_TESTED_PROBLEMS'
 export const LOAD_CURRENT_CONCEPT = 'LOAD_CURRENT_CONCEPT'
 export const LOAD_CURRENT_PROBLEM = 'LOAD_CURRENT_PROBLEM'
-export const UPDATE_CURRENT_CONCEPT = 'UPDATE_CURRENT_CONCEPT'
+
+export const NEXT_PROBLEM = 'NEXT_PROBLEM'
 
 export const loadConcepts = (concepts) => {
   return {
@@ -128,12 +128,11 @@ export const startAssessment = () => {
       .then(res => res.json())
       .then(res => {
         dispatch({ type: START_ASSESSMENT })
-        dispatch({ type: ADD_CONCEPT_GROUP, concepts: res.data })
         dispatch(setCurrentValues(res.data[0]))
       })
       .catch(err => { console.log(err) })
-    }
   }
+}
 
 export const setCurrentValues = (concept) => {
 
@@ -149,9 +148,165 @@ export const setCurrentValues = (concept) => {
         })
         dispatch({
           type: LOAD_CURRENT_PROBLEM,
-          details: res.data[0]
+          problem: res.data[0]
         })
       })
       .catch(err => { console.log(err) })
+  }
+}
+
+export const updateCurrent = (type, value, status) => {
+
+  return dispatch => {
+
+    if (type === 'problem') {
+
+      let updatedProblem = {...value, status}
+      console.log(updatedProblem)
+
+      dispatch(updateTested(type, updatedProblem))
+
+    } else if (type === 'concept') {
+
+      dispatch(updateTested(type, status))
+
+    }
+  }
+}
+
+export const updateTested = (type, value, status) => {
+
+  return dispatch => {
+
+    let updated = {...value, status}
+
+    if (type === 'problem') {
+
+      dispatch({
+        type: UPDATE_TESTED_PROBLEMS,
+        problem: updated
+      })
+    }
+
+    else if (type === 'concept') {
+
+      dispatch({
+        type: UPDATE_TESTED_CONCEPTS,
+        concept: updated
+      })
+    }
+  }
+}
+
+export const nextProblem = (concept, nextIndex) => {
+
+  return dispatch => {
+    let nextProblem = concept.problems[nextIndex]
+
+    dispatch({
+      type: LOAD_CURRENT_PROBLEM,
+      problem: nextProblem
+    })
+  }
+}
+
+export const checkAnswer = ({ answer } , problem) => {
+
+  return (dispatch, getState) => {
+
+    let threshold = 60/100
+    let concept = getState().assessment.currentConcept
+    let problems = concept.problems
+    let testedProblems = getState().assessment.tested.problems
+
+    let problemIndex = problems.reduce((initial, prob, i) => {
+      return prob._id === problem._id ? initial + i : initial
+    }, 0)
+
+    if (answer.toLowerCase() === problem.answer.toLowerCase()) {
+
+      dispatch(updateTested('problem', problem, 'correct'))
+
+      let totalCorrect = countProblems(testedProblems, 'correct')
+
+      if (totalCorrect / problems.length >= threshold) {
+
+        dispatch(updateTested('concept', concept, 'understood'))
+
+        fetch('/api/concepts/relationship/subsequent?concept=' + concept.details._id, {
+          headers: {'Content-Type': 'application/json'},
+        })
+        .then(res => res.json())
+        .then(res => {
+          console.log(res.data)
+          if (res.data.length !== 0) {
+            dispatch(setCurrentValues(res.data[0]))
+          } else {
+            fetch('/api/concepts/relationship/parallel?concept=' + concept.details._id, {
+              headers: {'Content-Type': 'application/json'},
+            })
+            .then(res => res.json())
+            .then(res => {
+              console.log(res.data);
+              if (res.data.length !== 0) {
+                dispatch(setCurrentValues(res.data[0]))
+              } else {
+                dispatch({type: END_ASSESSMENT})
+              }
+            })
+          }
+        })
+      } else {
+        dispatch(nextProblem(concept, problemIndex + 1))
+      }
+    } else {
+
+      dispatch(updateTested('problem', problem, 'incorrect'))
+
+      let totalIncorrect = countProblems(testedProblems, 'incorrect')
+
+      if (totalIncorrect / problems.length >= (1 - threshold)) {
+
+        dispatch(updateTested('concept', concept, 'developing'))
+
+        fetch('/api/concepts/relationship/preceding?concept=' + concept._id, {
+          headers: {'Content-Type': 'application/json'},
+        })
+        .then(res => res.json())
+        .then(res => {
+
+          if (res.data.length !== 0) {
+
+            let testedConcepts = getState().assessment.tested.concepts
+            let notTested = res.data.filter((prob) => {
+              return testedConcepts.reduce((initial, testedConcept) => {
+                return prob._id === testedConcept._id ? initial + 1 : initial
+              }, 0)
+            })
+            dispatch(setCurrentValues(notTested[0]))
+          } else {
+            fetch('/api/concepts/relationship/parallel?concept=' + concept._id, {
+              headers: {'Content-Type': 'application/json'},
+            })
+            .then(res => res.json())
+            .then(res => {
+              if (res.data.length !== 0) {
+                dispatch(setCurrentValues(res.data[0]))
+              } else {
+                dispatch({type: END_ASSESSMENT})
+              }
+            })
+          }
+        })
+      } else {
+        dispatch(nextProblem(concept, problemIndex + 1))
+      }
+    }
+
+    function countProblems(problems, status) {
+      return problems.reduce((initial, prob) => {
+        return prob.status === status ? ++initial : initial
+      }, 0)
+    }
   }
 }
