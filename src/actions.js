@@ -150,33 +150,12 @@ export const setCurrentValues = (concept) => {
   }
 }
 
-export const updateCurrent = (type, value, status) => {
+export const updateTested = (type, value, status,  studentAnswer, concept) => {
 
   return dispatch => {
 
     if (type === 'problem') {
-
-      let updatedProblem = {...value, status}
-      console.log(updatedProblem)
-
-      dispatch(updateTested(type, updatedProblem))
-
-    } else if (type === 'concept') {
-
-      dispatch(updateTested(type, status))
-
-    }
-  }
-}
-
-export const updateTested = (type, value, status) => {
-
-  return dispatch => {
-
-    let updated = {...value, status}
-
-    if (type === 'problem') {
-
+      let updated = {...value, status, studentAnswer, concept}
       dispatch({
         type: UPDATE_TESTED_PROBLEMS,
         problem: updated
@@ -184,7 +163,7 @@ export const updateTested = (type, value, status) => {
     }
 
     else if (type === 'concept') {
-
+      let updated = {...value, status}
       dispatch({
         type: UPDATE_TESTED_CONCEPTS,
         concept: updated
@@ -209,10 +188,11 @@ export const checkAnswer = ({ answer } , problem) => {
 
   return (dispatch, getState) => {
 
-    let threshold = 60/100
+    let threshold = 50/100
     let concept = getState().assessment.currentConcept
+    let conceptId = concept.details._id
     let problems = concept.problems
-    let testedProblems = getState().assessment.tested.problems
+    let testedConcepts = getState().assessment.tested.concepts
 
     let problemIndex = problems.reduce((initial, prob, i) => {
       return prob._id === problem._id ? initial + i : initial
@@ -220,88 +200,140 @@ export const checkAnswer = ({ answer } , problem) => {
 
     if (answer.toLowerCase() === problem.answer.toLowerCase()) {
 
-      dispatch(updateTested('problem', problem, 'correct'))
+      dispatch(updateTested('problem', problem, 'correct', answer,  conceptId))
 
-      let totalCorrect = countProblems(testedProblems, 'correct')
+      let testedProblems = getState().assessment.tested.problems
+      let totalCorrect = countProblems(testedProblems, conceptId, 'correct')
 
-      if (totalCorrect / problems.length >= threshold) {
+      if (totalCorrect / problems.length < threshold) {
+
+        dispatch(nextProblem(concept, problemIndex + 1))
+
+      } else {
 
         dispatch(updateTested('concept', concept, 'understood'))
 
-        fetch('/api/concepts/relationship/subsequent?concept=' + concept.details._id, {
+        fetch('/api/concepts/relationship/subsequent?concept=' + conceptId, {
           headers: {'Content-Type': 'application/json'},
         })
         .then(res => res.json())
         .then(res => {
-          console.log(res.data)
-          if (res.data.length !== 0) {
-            dispatch(setCurrentValues(res.data[0]))
+
+          let notTested = getNotTested(res.data, testedConcepts)
+          if (res.data.length && notTested.length) {
+            dispatch(setCurrentValues(notTested[0]))
+
           } else {
-            fetch('/api/concepts/relationship/parallel?concept=' + concept.details._id, {
+            fetch('/api/concepts/relationship/parallel/preceding?concept=' + conceptId, {
               headers: {'Content-Type': 'application/json'},
             })
             .then(res => res.json())
             .then(res => {
-              console.log(res.data);
-              if (res.data.length !== 0) {
-                dispatch(setCurrentValues(res.data[0]))
+              if (res.data.length) {
+                let notTested = getNotTested(res.data, testedConcepts)
+                if (notTested.length) {
+                  dispatch(setCurrentValues(notTested[0]))
+                } else {
+                  dispatch({type: END_ASSESSMENT})
+                }
               } else {
-                dispatch({type: END_ASSESSMENT})
+                fetch('api/concepts/relationship/parallel/subsequent?concept=' + conceptId, {
+                  headers: {'Content-Type': 'application/json'},
+                })
+                .then(res => res.json())
+                .then(res => {
+                  let notTested = getNotTested(res.data, testedConcepts)
+                  if (res.data.length && notTested.length) {
+                    dispatch(setCurrentValues(notTested[0]))
+                  } else {
+                    dispatch({type: END_ASSESSMENT})
+                  }
+                })
               }
             })
           }
         })
-      } else {
-        dispatch(nextProblem(concept, problemIndex + 1))
       }
     } else {
 
-      dispatch(updateTested('problem', problem, 'incorrect'))
+      dispatch(updateTested('problem', problem, 'incorrect', answer, conceptId))
 
-      let totalIncorrect = countProblems(testedProblems, 'incorrect')
+      let testedProblems = getState().assessment.tested.problems
+      let totalIncorrect = countProblems(testedProblems, conceptId, 'incorrect')
 
-      if (totalIncorrect / problems.length >= (1 - threshold)) {
+      if (totalIncorrect / problems.length < (1 - threshold)) {
+
+        dispatch(nextProblem(concept, problemIndex + 1))
+
+      } else {
 
         dispatch(updateTested('concept', concept, 'developing'))
 
-        fetch('/api/concepts/relationship/preceding?concept=' + concept._id, {
+        fetch('/api/concepts/relationship/preceding?concept=' + conceptId, {
           headers: {'Content-Type': 'application/json'},
         })
         .then(res => res.json())
         .then(res => {
 
-          if (res.data.length !== 0) {
-
-            let testedConcepts = getState().assessment.tested.concepts
-            let notTested = res.data.filter((prob) => {
-              return testedConcepts.reduce((initial, testedConcept) => {
-                return prob._id === testedConcept._id ? initial + 1 : initial
-              }, 0)
-            })
+          let notTested = getNotTested(res.data, testedConcepts)
+          if (res.data.length && notTested.length) {
             dispatch(setCurrentValues(notTested[0]))
+
           } else {
-            fetch('/api/concepts/relationship/parallel?concept=' + concept._id, {
+            fetch('/api/concepts/relationship/parallel/subsequent?concept=' + conceptId, {
               headers: {'Content-Type': 'application/json'},
             })
             .then(res => res.json())
             .then(res => {
-              if (res.data.length !== 0) {
-                dispatch(setCurrentValues(res.data[0]))
+              if (res.data.length) {
+                let notTested = getNotTested(res.data, testedConcepts)
+                if (notTested.length) {
+                  dispatch(setCurrentValues(notTested[0]))
+                } else {
+                  dispatch({type: END_ASSESSMENT})
+                }
               } else {
-                dispatch({type: END_ASSESSMENT})
+                fetch('api/concepts/relationship/parallel/preceding?concept=' + conceptId, {
+                  headers: {'Content-Type': 'application/json'}
+                })
+                .then(res => res.json())
+                .then(res => {
+                  let notTested = getNotTested(res.data, testedConcepts)
+                  if (res.data.length && notTested.length) {
+                    dispatch(setCurrentValues(notTested[0]))
+                  } else {
+                    dispatch({type: END_ASSESSMENT})
+                  }
+                })
               }
             })
           }
         })
-      } else {
-        dispatch(nextProblem(concept, problemIndex + 1))
       }
     }
 
-    function countProblems(problems, status) {
-      return problems.reduce((initial, prob) => {
-        return prob.status === status ? ++initial : initial
-      }, 0)
+    function countProblems(problems, filter, status) {
+      return problems
+        .filter(prob => {
+          return prob.concept === filter
+        })
+        .reduce((initial, prob) => {
+          return prob.status === status ? initial + 1 : initial
+        }, 0)
+    }
+
+    function getNotTested (concepts, tested) {
+      if (!tested.length) {
+        return concepts
+      } else {
+        return concepts.filter(concept => {
+          let exclude = 0
+          tested.forEach(testedConcept => {
+            if (concept._id === testedConcept.details._id) exclude++
+          })
+          return !exclude
+        })
+      }
     }
   }
 }
