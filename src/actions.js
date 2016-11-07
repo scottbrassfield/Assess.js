@@ -264,7 +264,7 @@ export const checkAnswer = ({ answer } , problem) => {
 
         dispatch(updateTested('concept', concept, 'developing'))
 
-        fetch('/api/concepts/relationship/preceding?concept=' + concept._id, {
+        fetch('/api/concepts/relationship/preceding?concept=' + concept.details._id, {
           headers: {'Content-Type': 'application/json'},
         })
         .then(res => res.json())
@@ -280,7 +280,7 @@ export const checkAnswer = ({ answer } , problem) => {
             })
             dispatch(setCurrentValues(notTested[0]))
           } else {
-            fetch('/api/concepts/relationship/parallel?concept=' + concept._id, {
+            fetch('/api/concepts/relationship/parallel?concept=' + concept.details._id, {
               headers: {'Content-Type': 'application/json'},
             })
             .then(res => res.json())
