@@ -1,7 +1,7 @@
 import React from 'react'
 
 const Question = ({ problem }) => (
-  <div>
+  <div style={{fontSize: 24}}>
     {problem.question}
   </div>
 )

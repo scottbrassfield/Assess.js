@@ -31,7 +31,7 @@ const Main = (props) => {
     mainContent: {
       marginLeft: 180,
       backgroundColor: '#f6f6f6',
-      height: '100vh', width: '100vw',
+      height: '100vh', width: '86vw',
       position: 'relative'
     },
     options: {
