@@ -223,17 +223,14 @@ export const checkAnswer = ({ answer } , problem) => {
             dispatch(setCurrentValues(res.data[0]))
 
           } else {
-            fetch('/api/concepts/relationship/parallel?concept=' + conceptId, {
+            fetch('/api/concepts/relationship/parallel/preceding?concept=' + conceptId, {
               headers: {'Content-Type': 'application/json'},
             })
             .then(res => res.json())
             .then(res => {
-
-              if (res.data.length) {
-
-                let notTested = getNotTested(res.data, testedConcepts)
+              let notTested = getNotTested(res.data, testedConcepts)
+              if (res.data.length && notTested.length) {
                 dispatch(setCurrentValues(notTested[0]))
-
               } else {
                 dispatch({type: END_ASSESSMENT})
               }
@@ -267,7 +264,7 @@ export const checkAnswer = ({ answer } , problem) => {
             dispatch(setCurrentValues(notTested[0]))
 
           } else {
-            fetch('/api/concepts/relationship/parallel?concept=' + conceptId, {
+            fetch('/api/concepts/relationship/parallel/subsequent?concept=' + conceptId, {
               headers: {'Content-Type': 'application/json'},
             })
             .then(res => res.json())

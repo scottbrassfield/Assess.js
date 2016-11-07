@@ -60,7 +60,7 @@ module.exports = function(db) {
     })
   })
 
-  router.get('/relationship/parallel', (req, res) => {
+  router.get('/relationship/parallel/subsequent', (req, res) => {
     const concept = parseInt(req.query.concept)
     db.cypherQuery(
       `START concept = node({id})
@@ -72,5 +72,16 @@ module.exports = function(db) {
     })
   })
 
+  router.get('/relationship/parallel/preceding', (req, res) => {
+    const concept = parseInt(req.query.concept)
+    db.cypherQuery(
+      `START concept = node({id})
+      MATCH (concept)<-[:PRECEDES]-(preceding)-[:PRECEDES]->(parallel)
+      RETURN parallel`,
+      {id: concept}, (err, result) => {
+        if (err) throw err
+        res.json(result)
+    })
+  })
   return router;
 }
