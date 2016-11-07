@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { reduxForm, Field, FieldArray } from 'redux-form'
 import { addConcept } from '../../actions'
-import { Input } from 'semantic-ui-react'
+import { Grid, Segment, Input, Button } from 'semantic-ui-react'
 
 const renderInput = ({input, style, label}) => (
   <div style={style}>
@@ -13,6 +13,7 @@ const renderInput = ({input, style, label}) => (
 
 const renderConcepts = ({ input, concepts }) => (
   <select
+    className={'ui dropdown'}
     onChange = {(value) => {input.onChange(value)}}
     {...input}
   >
@@ -24,7 +25,7 @@ const renderConcepts = ({ input, concepts }) => (
 )
 
 const renderRelationships = ({ input }) => (
-  <select onChange = {(value) => {input.onChange(value)}}
+  <select className={'ui dropdown'} onChange = {(value) => {input.onChange(value)}}
     {...input}
     style={{marginLeft: '10px'}}
   >
@@ -37,7 +38,7 @@ const renderRelationships = ({ input }) => (
 const renderRelatedConcepts = ({ fields, concepts }) => (
   <div>
     <div style={{marginTop: '15px'}}>
-      <button type='button' onClick={() => fields.push({})}>Add Relationship</button>
+      <Button type='button' color='grey' onClick={() => fields.push({})}>Add Relationship</Button>
     </div>
     <div style={{marginTop: '10px'}}>
       {fields.map((rel, index) =>
@@ -51,11 +52,12 @@ const renderRelatedConcepts = ({ fields, concepts }) => (
             name={`${rel}.relationship`}
             component={renderRelationships}
             concepts={concepts} />
-          <button
+          <Button
+            basic
             onClick={() => fields.remove(index)}
             style={{display: 'inline-block', marginLeft: '10px'}}>
             Remove
-          </button>
+          </Button>
         </div>
       )}
       </div>
@@ -64,21 +66,30 @@ const renderRelatedConcepts = ({ fields, concepts }) => (
 
 let AddConceptForm = ({ handleSubmit, concepts }) => {
   return (
-    <div>
-      <h2>Add a concept</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <div style={{display: 'inline-block'}}>
-            <Field style={{display: 'block'}} name='conceptName' component={renderInput} label='Concept Name'/>
-          </div>
-          <div style={{display: 'inline-block', marginLeft: '10px'}}>
-            <Field style={{display: 'block'}} name='conceptDescr' component={renderInput} label='Description' />
-          </div>
-        </div>
-        <FieldArray name='relatedConcepts' component={renderRelatedConcepts} concepts={concepts}/>
-        <button style={{marginTop: '15px'}} type='submit'>Submit</button>
-      </form>
-    </div>
+
+    <Grid padded>
+      <Grid.Row>
+        <Grid.Column width={10}>
+          <Segment.Group style={{marginTop: 80}}>
+            <Segment><h2>Add a concept</h2></Segment>
+            <Segment>
+              <form onSubmit={handleSubmit}>
+                <div>
+                  <div style={{display: 'inline-block'}}>
+                    <Field style={{display: 'block'}} name='conceptName' component={renderInput} label='Concept Name'/>
+                  </div>
+                  <div style={{display: 'inline-block', marginLeft: '10px'}}>
+                    <Field style={{display: 'block'}} name='conceptDescr' component={renderInput} label='Description' />
+                  </div>
+                </div>
+                <FieldArray name='relatedConcepts' component={renderRelatedConcepts} concepts={concepts}/>
+                <Button style={{marginTop: '15px'}} type='submit'>Submit</Button>
+              </form>
+            </Segment>
+          </Segment.Group>
+        </Grid.Column>
+      </Grid.Row>
+    </Grid>
   )
 }
 

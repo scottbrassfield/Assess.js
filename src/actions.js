@@ -88,7 +88,7 @@ export const addProblem = ({concept, topic, question, answer}) => {
       .then(res => {
         let root_node = res._id
         let other_node
-        let concepts = getState().concepts.byId
+        let concepts = getState().allConcepts.byId
         for (var prop in concepts) {
           if (concepts[prop].title === concept) {
             other_node = concepts[prop]._id

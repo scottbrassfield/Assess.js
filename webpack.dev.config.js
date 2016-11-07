@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path')
 
 module.exports = {
@@ -23,17 +22,12 @@ module.exports = {
         inclue: path.join(__dirname, 'src')
       },
       {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style-loader','css-loader')
-      },
-      {
-        test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader')
+        test: /\.(jpg|png)$/,
+        loader: 'file?name=[path][name].[hash].[ext]'
       }
     ]
   },
   plugins: [
-    new ExtractTextPlugin('style.css'),
     new webpack.HotModuleReplacementPlugin()
   ],
   devServer:  {
