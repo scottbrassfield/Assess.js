@@ -2,43 +2,56 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { reduxForm, Field } from 'redux-form'
 import { addProblem } from '../../actions'
-import { Input } from 'semantic-ui-react'
+import { Grid, Segment, Form, Input, Button } from 'semantic-ui-react'
 
 const renderInput = ({input, style, label}) => (
-  <div style={{display: 'inline-block'}}>
-    <label style={{fontSize: '24px'}}>{label}</label>
+  <div>
+    <label style={{fontSize: 20}}>{label}</label>
     <Input type='text' {...input} style={style}/>
   </div>
 )
 
-const renderConcepts = ({ input, concepts }) => (
-  <select
-    onChange = {(value) => {input.onChange(value)}}
-    {...input}
-  >
-    <option>Choose...</option>
-    { concepts.map((concept, index) =>
-      <option key={index}>{concept}</option>
-    )}
-  </select>
+const renderConcepts = ({ input, concepts, label }) => (
+  <div>
+    <label style={{fontSize: 20}}>{label}</label>
+    <select className='ui dropdown' {...input}>
+      <option>Choose...</option>
+      { concepts.map((concept, index) =>
+        <option key={index}>{concept}</option>
+      )}
+    </select>
+  </div>
 )
 
 let AddProblemForm = ({ handleSubmit, concepts }) => {
   return (
-    <div style={{marginTop: '20px'}}>
-      <h2>Add a Problem</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <Field name='concept' component={renderConcepts} label='Related Concept' concepts={concepts}/>
-          <Field name='topic' component={renderInput} label='Topic' />
-        </div>
-        <div>
-          <Field name='question' component={renderInput} label='Question' />
-          <Field name='answer' component={renderInput} label='Answer' />
-        </div>
-        <button style={{marginTop: '15px'}} type='submit'>Submit</button>
-      </form>
-    </div>
+    <Grid padded>
+      <Grid.Row>
+        <Grid.Column width={10}>
+          <Segment.Group style={{marginTop: 80}}>
+            <Segment><h2>Add a Problem</h2></Segment>
+            <Segment>
+            <div style={{marginTop: '20px'}}>
+              <Form onSubmit={handleSubmit}>
+                <Form.Field>
+                  <Field name='concept' component={renderConcepts} label='Related Concept' concepts={concepts}/>
+                </Form.Field>
+                <Form.Field>
+                  <Field name='topic' component={renderInput} label='Topic' /></Form.Field>
+                <Form.Field>
+                  <Field name='question' component={renderInput} label='Question' />
+                </Form.Field>
+                <Form.Field>
+                  <Field name='answer' component={renderInput} label='Answer' />
+                </Form.Field>
+                <Button type='submit' color='grey' style={{marginTop: '15px'}}>Submit</Button>
+              </Form>
+            </div>
+            </Segment>
+          </Segment.Group>
+        </Grid.Column>
+      </Grid.Row>
+    </Grid>
   )
 }
 
