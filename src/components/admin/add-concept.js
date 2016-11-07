@@ -54,6 +54,7 @@ const renderRelatedConcepts = ({ fields, concepts }) => (
             concepts={concepts} />
           <Button
             basic
+            type='button'
             onClick={() => fields.remove(index)}
             style={{display: 'inline-block', marginLeft: '10px'}}>
             Remove
@@ -66,7 +67,6 @@ const renderRelatedConcepts = ({ fields, concepts }) => (
 
 let AddConceptForm = ({ handleSubmit, concepts }) => {
   return (
-
     <Grid padded>
       <Grid.Row>
         <Grid.Column width={10}>
