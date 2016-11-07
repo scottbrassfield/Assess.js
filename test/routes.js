@@ -314,12 +314,48 @@ describe('Database Connection', () => {
           db.insertRelationship(other_root_concept_id, related_concept_id, 'PRECEDES', {}, (err) => {
             if (err) throw err
             const query = { concept: root_concept_id}
-            request.get(TEST_URI + '/api/concepts/relationship/parallel',
+            request.get(TEST_URI + '/api/concepts/relationship/parallel/subsequent',
               {json: true, qs: query},
               (err, res, body) => {
               expect(err).to.be.null
               expect(body.data).to.have.length(1)
               expect(body.data[0]).to.have.property('_id', other_root_concept_id)
+              done()
+            })
+          })
+        })
+      })
+    })
+  })
+
+  describe ('GET /concepts - parallel', () => {
+
+    it ('receives all concepts that have the same preceding concept(s)', done => {
+      db.cypherQuery("MATCH (n) RETURN n", (err, result) => {
+        if (err) throw err;
+        let root_concept_id, related_concept_id, other_related_concept_id
+        result.data.forEach(node => {
+          if (node.title === 'concept 1') {
+            root_concept_id = node._id
+          }
+          if (node.title === 'concept 2') {
+            related_concept_id = node._id
+          }
+          if (node.title === 'concept 3') {
+            other_related_concept_id = node._id
+          }
+        })
+        db.insertRelationship(root_concept_id, related_concept_id, 'PRECEDES', {}, (err) => {
+          if (err) throw err;
+          db.insertRelationship(root_concept_id, other_related_concept_id, 'PRECEDES', {}, (err) => {
+            if (err) throw err
+            const query = { concept: related_concept_id}
+            request.get(TEST_URI + '/api/concepts/relationship/parallel/preceding',
+              {json: true, qs: query},
+              (err, res, body) => {
+              expect(err).to.be.null
+              expect(body.data).to.have.length(1)
+              expect(body.data[0]).to.have.property('_id', other_related_concept_id)
               done()
             })
           })
