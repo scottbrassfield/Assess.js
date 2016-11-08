@@ -3,11 +3,11 @@
 export const LOAD_CONCEPTS = 'LOAD_CONCEPTS'
 export const START_ASSESSMENT = 'START_ASSESSMENT'
 export const END_ASSESSMENT = 'END_ASSESSMENT'
+export const CLEAR_ASSESSMENT = 'CLEAR_ASSESSMENT'
 export const UPDATE_TESTED_CONCEPTS = 'UPDATE_TESTED_CONCEPTS'
 export const UPDATE_TESTED_PROBLEMS = 'UPDATE_TESTED_PROBLEMS'
 export const LOAD_CURRENT_CONCEPT = 'LOAD_CURRENT_CONCEPT'
 export const LOAD_CURRENT_PROBLEM = 'LOAD_CURRENT_PROBLEM'
-
 export const NEXT_PROBLEM = 'NEXT_PROBLEM'
 
 export const loadConcepts = (concepts) => {
@@ -184,6 +184,16 @@ export const nextProblem = (concept, nextIndex) => {
   }
 }
 
+export const endAssessment = (assessment) => {
+
+  return dispatch => {
+    dispatch({
+      type: END_ASSESSMENT,
+      assessment
+    })
+  }
+}
+
 export const checkAnswer = ({ answer } , problem) => {
 
   return (dispatch, getState) => {
@@ -192,7 +202,7 @@ export const checkAnswer = ({ answer } , problem) => {
     let concept = getState().assessment.currentConcept
     let conceptId = concept.details._id
     let problems = concept.problems
-    let testedConcepts = getState().assessment.tested.concepts
+
 
     let problemIndex = problems.reduce((initial, prob, i) => {
       return prob._id === problem._id ? initial + i : initial
@@ -212,6 +222,9 @@ export const checkAnswer = ({ answer } , problem) => {
       } else {
 
         dispatch(updateTested('concept', concept, 'understood'))
+
+        let results = getState().assessment.tested
+        let testedConcepts = results.concepts
 
         fetch('/api/concepts/relationship/subsequent?concept=' + conceptId, {
           headers: {'Content-Type': 'application/json'},
@@ -234,7 +247,7 @@ export const checkAnswer = ({ answer } , problem) => {
                 if (notTested.length) {
                   dispatch(setCurrentValues(notTested[0]))
                 } else {
-                  dispatch({type: END_ASSESSMENT})
+                  dispatch(endAssessment(results))
                 }
               } else {
                 fetch('api/concepts/relationship/parallel/subsequent?concept=' + conceptId, {
@@ -246,7 +259,7 @@ export const checkAnswer = ({ answer } , problem) => {
                   if (res.data.length && notTested.length) {
                     dispatch(setCurrentValues(notTested[0]))
                   } else {
-                    dispatch({type: END_ASSESSMENT})
+                    dispatch(endAssessment(results))
                   }
                 })
               }
@@ -269,6 +282,9 @@ export const checkAnswer = ({ answer } , problem) => {
 
         dispatch(updateTested('concept', concept, 'developing'))
 
+        let results = getState().assessment.tested
+        let testedConcepts = results.concepts
+
         fetch('/api/concepts/relationship/preceding?concept=' + conceptId, {
           headers: {'Content-Type': 'application/json'},
         })
@@ -290,7 +306,7 @@ export const checkAnswer = ({ answer } , problem) => {
                 if (notTested.length) {
                   dispatch(setCurrentValues(notTested[0]))
                 } else {
-                  dispatch({type: END_ASSESSMENT})
+                  dispatch(endAssessment(results))
                 }
               } else {
                 fetch('api/concepts/relationship/parallel/preceding?concept=' + conceptId, {
@@ -302,7 +318,7 @@ export const checkAnswer = ({ answer } , problem) => {
                   if (res.data.length && notTested.length) {
                     dispatch(setCurrentValues(notTested[0]))
                   } else {
-                    dispatch({type: END_ASSESSMENT})
+                    dispatch(endAssessment(results))
                   }
                 })
               }
