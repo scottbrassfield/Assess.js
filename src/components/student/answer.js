@@ -1,21 +1,18 @@
 import React from 'react'
 import { reduxForm, Field } from 'redux-form'
-import { Form, Input, Button } from 'semantic-ui-react'
+import { Input, Button } from 'semantic-ui-react'
 import { checkAnswer } from '../../actions'
 
-let Answer = ({ handleSubmit }) => {
+const renderInput = ({ input, placeholder }) => (
+  <Input type='text' {...input} placeholder={placeholder} />
+)
 
-  const renderInput = ({ input, placeholder }) => (
-    <Input {...input} placeholder={placeholder} />
-  )
-
-  return (
-    <Form onSubmit={handleSubmit}>
-      <Field name='answer' component={renderInput} placeholder='Enter Answer' />
-      <Button color='grey' type='submit' style={{marginLeft: 10, verticalAlign: 'top'}}>Submit</Button>
-    </Form>
-  )
-}
+let Answer = ({ handleSubmit }) => (
+  <form onSubmit={handleSubmit}>
+    <Field name='answer' component={renderInput} placeholder='Enter Answer' />
+    <Button color='grey' type='submit' style={{marginLeft: 10, verticalAlign: 'top'}}>Submit</Button>
+  </form>
+)
 
 Answer = reduxForm({
   form: 'answerForm',
