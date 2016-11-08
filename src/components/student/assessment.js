@@ -1,11 +1,16 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Grid } from 'semantic-ui-react'
+import { Grid, Button } from 'semantic-ui-react'
 import { Link } from 'react-router'
 import Problem from './problem'
+import { CLEAR_ASSESSMENT } from '../../actions'
 
 const Assessment = (props) => {
-  if (props.active) {
+
+  if (props.status === 'not started') {
+    return <div />
+
+  } else if (props.status ==='in progress') {
     return (
       <Grid padded>
         <Grid.Row style={{marginTop: 100}}>
@@ -28,7 +33,7 @@ const Assessment = (props) => {
           <Grid.Column width={13}>
             <div>
               <h1>The Assessment has completed</h1>
-              <Link to='/report'><h4>View results</h4></Link>
+              <Link to='/report'><Button onClick={() => props.dispatch({type: CLEAR_ASSESSMENT})}>View results</Button></Link>
             </div>
           </Grid.Column>
         </Grid.Row>
@@ -42,7 +47,7 @@ const mapState = (state) => {
   return {
     problem: state.assessment.currentProblem,
     concept: state.assessment.currentConcept.details,
-    active: state.assessment.active
+    status: state.assessment.status
   }
 }
 
