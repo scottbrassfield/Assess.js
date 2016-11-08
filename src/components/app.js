@@ -9,6 +9,7 @@ import AdminDashboard from './admin/admin-dashboard'
 import AddConceptForm from './admin/add-concept'
 import AddProblemForm from './admin/add-problem'
 import Assessment from './student/assessment'
+import Report from './student/report'
 
 const App = () => (
   <Router history={hashHistory}>
@@ -22,6 +23,7 @@ const App = () => (
       <Route path='/student' component={Student}>
         <IndexRoute component={StudentDashboard} />
         <Route path='/assessment' component={Assessment} />
+        <Route path='/report' component={Report} />
       </Route>
     </Route>
   </Router>
