@@ -20,15 +20,27 @@ Assess.js is a platform for assessing someone's knowledge of basic JavaScript co
 Given that the underpinnings of the assessment platform deal with data that is interrelated, it made sense to model this data using a graph database.  I used Neo4j to create a database of JavaScript concepts (e.g., data types, variables) with relationships between the concepts based on how the concepts build on each other. I used Neo4j's Cypher Query Language to interact with the database, with the help of a Node library that provided a light abstraction for simpler queries. 
 
 ###Assessment
-As a student answers questions correctly or incorrectly, the assessment is designed to follow up with questions on concepts that either build on or precede the answered question.  This required a fair amount of database interaction and more involved queries while the assessment is running. I created an express server with a series of endpoints that queried related concepts based on a test-taker's progress.  See the endpoints section below for detail on the api.
+As a student answers questions correctly or incorrectly, the assessment is designed to follow up with questions on concepts that either build on or precede the answered question.  This required a fair amount of database interaction and more involved queries while the assessment is running. I created an express server with a series of endpoints that queried related concepts based on a test-taker's progress.  See the Api section below for detail on the api.
 
 ###User Interface
 For this first phase of the project, the user interface consists of student and administrative dashboards. On the administrative side, I create two forms. One inserts a new concept into the database, including the relationships between other concepts.  The other inserts a test question into the database which can be connected to any concept. The student dashboard provides an entry point for the assessment.
 
 
-##Endpoints
+##Api
 
-###Add a problem to the database
+As discussed above, the graph database consists of a series of nodes (i.e., JavaScript concepts and test questions), and relationships between the concepts and questions. In Neo4j, the nodes and relationships are provided with labels for identification. Here is a summary of the nodes and relationships modeled in the database.
+
+Nodes:  
+- Concepts
+- Problems (test questions)
+
+Relationships
+- Concept PRECEDES Concept
+- Problem TESTS Concept
+
+###Endpoints
+
+####Add a problem to the database
 ```
 POST /problems 
 ```
