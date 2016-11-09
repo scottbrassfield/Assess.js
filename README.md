@@ -25,6 +25,10 @@ As a student answers questions correctly or incorrectly, the assessment is desig
 ###User Interface
 For this first phase of the project, the user interface consists of student and administrative dashboards. On the administrative side, I create two forms. One inserts a new concept into the database, including the relationships between other concepts.  The other inserts a test question into the database which can be connected to any concept. The student dashboard provides an entry point for the assessment.
 
+![Alt text](/src/images/screenshots/Screen Shot 2016-11-09 at 9.24.51 AM.png?raw=true "Home Page")
+![Alt text](/src/images/screenshots/Screen Shot 2016-11-09 at 9.26.36 AM.png?raw=true "Admin Dashboard")
+![Alt text](/src/images/screenshots/Screen Shot 2016-11-09 at 9.26.55 AM.png?raw=true "Student Dashboard")
+
 
 ##Api
 
