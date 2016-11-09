@@ -19,6 +19,8 @@ Assess.js is a platform for assessing someone's knowledge of basic JavaScript co
 ###Data storage and maintenance
 Given that the underpinnings of the assessment platform deal with data that is interrelated, it made sense to model this data using a graph database.  I used Neo4j to create a database of JavaScript concepts (e.g., data types, variables) with relationships between the concepts based on how the concepts build on each other. I used Neo4j's Cypher Query Language to interact with the database, with the help of a Node library that provided a light abstraction for simpler queries. 
 
+![Alt text](/src/images/screenshots/Screen Shot 2016-11-09 at 12.53.13 PM.png?raw=true "Graph Database")
+
 ###Assessment
 As a student answers questions correctly or incorrectly, the assessment is designed to follow up with questions on concepts that either build on or precede the answered question.  This required a fair amount of database interaction and more involved queries while the assessment is running. I created an express server with a series of endpoints that queried related concepts based on a test-taker's progress.  See the Api section below for detail on the api.
 
