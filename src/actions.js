@@ -32,17 +32,21 @@ export const getAllConcepts = () => {
 
 export const addConcept = ({conceptDescr, conceptName, relatedConcepts}) => {
 
-  let relationships = relatedConcepts.map(rel => {
+  if (relatedConcepts && relatedConcepts.length) {
 
-    let precedes = rel.relationship === 'precedes'
+    var relationships = relatedConcepts.map(rel => {
 
-    let root_node = precedes ? conceptName : rel.concept
-    let other_node = precedes ? rel.concept : conceptName
+      let precedes = rel.relationship === 'precedes'
 
-    return { root_node, other_node, link: 'PRECEDES'}
-  })
+      let root_node = precedes ? conceptName : rel.concept
+      let other_node = precedes ? rel.concept : conceptName
+
+      return { root_node, other_node, link: 'PRECEDES'}
+    })
+  }
 
   return dispatch => {
+
     return fetch('/api/concepts', {
         method: 'POST',
         headers: {
@@ -54,18 +58,23 @@ export const addConcept = ({conceptDescr, conceptName, relatedConcepts}) => {
       .then(res => {
         console.log(`Added Concept: ${res.title}`)
 
-        fetch('/api/relationships/titles', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(relationships)
-        })
-        .then(res => res.json())
-        .then(res => {
-          console.log(`Added ${res.length} relationship(s)`)
-          dispatch(getAllConcepts())
-        })
+        if (relationships && relationships.length) {
+
+          fetch('/api/relationships/titles', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(relationships)
+          })
+          .then(res => res.json())
+          .then(res => {
+            console.log(`Added ${res.length} relationship(s)`)
+          })
+        }
+      })
+      .then(() => {
+        dispatch(getAllConcepts())
       })
       .catch(err => {
         console.log(err)

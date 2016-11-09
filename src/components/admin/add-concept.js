@@ -139,8 +139,9 @@ let AddConceptForm = ({ handleSubmit, concepts }) => {
 
 AddConceptForm = reduxForm({
   form:'addConcept',
-  onSubmit: (values, dispatch) => {
+  onSubmit: (values, dispatch, { reset }) => {
     dispatch(addConcept(values))
+    reset()
   }
 })(AddConceptForm)
 
