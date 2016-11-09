@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { reduxForm, Field, FieldArray } from 'redux-form'
+import { Link } from 'react-router'
 import { addConcept } from '../../actions'
 import { Grid, Segment, Form, Input, Button, Divider } from 'semantic-ui-react'
 
@@ -123,6 +124,9 @@ let AddConceptForm = ({ handleSubmit, concepts }) => {
                 <Button type='submit' color='grey'>
                   Submit
                 </Button>
+                <Link to='/admin'><Button basic type='button'>
+                  Cancel
+                </Button></Link>
               </Form>
             </Segment>
           </Segment.Group>

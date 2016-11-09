@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { reduxForm, Field } from 'redux-form'
+import { Link } from 'react-router'
 import { addProblem } from '../../actions'
 import { Grid, Segment, Form, Input, Button, Divider } from 'semantic-ui-react'
 
@@ -52,6 +53,9 @@ let AddProblemForm = ({ handleSubmit, concepts }) => {
                   </Form.Field>
                   <Divider />
                   <Button type='submit' color='grey'>Submit</Button>
+                  <Link to='/admin'>
+                    <Button basic type='button'>Cancel</Button>
+                  </Link>
                 </Form>
               </div>
               </Segment>
