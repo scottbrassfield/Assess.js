@@ -69,8 +69,9 @@ let AddProblemForm = ({ handleSubmit, concepts }) => {
 
 AddProblemForm = reduxForm({
   form:'addProblem',
-  onSubmit: (values, dispatch) => {
+  onSubmit: (values, dispatch, { reset }) => {
     dispatch(addProblem(values))
+    reset()
   }
 })(AddProblemForm)
 

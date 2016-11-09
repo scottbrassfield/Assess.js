@@ -16,8 +16,9 @@ let Answer = ({ handleSubmit }) => (
 
 Answer = reduxForm({
   form: 'answerForm',
-  onSubmit: (values, dispatch, { problem, concept }) => {
+  onSubmit: (values, dispatch, { problem, concept, reset }) => {
     dispatch(checkAnswer(values, problem, concept))
+    reset()
   }
 })(Answer)
 
