@@ -42,6 +42,7 @@
     "css-loader": "^0.25.0",
     "express": "^4.14.0",
     "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.9.0",
     "flexboxgrid": "^6.3.1",
     "node-neo4j": "^2.0.3",
     "node-sass": "^3.10.1",
@@ -58,6 +59,7 @@
     "sass-loader": "^4.0.2",
     "semantic-ui-react": "^0.58.1",
     "style-loader": "^0.13.1",
+    "url-loader": "^0.5.7",
     "webpack": "^1.13.3"
   },
   "devDependencies": {

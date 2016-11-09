@@ -2,63 +2,82 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { reduxForm, Field, FieldArray } from 'redux-form'
 import { addConcept } from '../../actions'
-import { Grid, Segment, Input, Button } from 'semantic-ui-react'
+import { Grid, Segment, Form, Input, Button, Divider } from 'semantic-ui-react'
 
 const renderInput = ({input, style, label}) => (
-  <div style={style}>
-    <label style={{fontSize: '24px'}}>{label}</label>
+  <div>
+    <label style={{fontSize: 22}}>{label}</label>
     <Input type='text' {...input} style={style}/>
   </div>
 )
 
-const renderConcepts = ({ input, concepts }) => (
-  <select
-    className={'ui dropdown'}
-    onChange = {(value) => {input.onChange(value)}}
-    {...input}
-  >
-    <option>Choose...</option>
-    { concepts.map((concept, index) =>
-      <option key={index}>{concept}</option>
-    )}
-  </select>
+const renderConcepts = ({ input, concepts, label }) => (
+  <div>
+    <label>{label}</label>
+    <select
+      className={'ui dropdown'}
+      onChange = {(value) => {input.onChange(value)}}
+      {...input}
+    >
+      <option>Choose...</option>
+      { concepts.map((concept, index) =>
+        <option key={index}>{concept}</option>
+      )}
+    </select>
+  </div>
 )
 
-const renderRelationships = ({ input }) => (
-  <select className={'ui dropdown'} onChange = {(value) => {input.onChange(value)}}
-    {...input}
-    style={{marginLeft: '10px'}}
-  >
-    <option>Choose...</option>
-    <option value='precedes'>precedes</option>
-    <option value='follows'>follows</option>
-  </select>
+const renderRelationships = ({ input, label }) => (
+  <div>
+    <label>{label}</label>
+    <select
+      className={'ui dropdown'}
+      onChange = {(value) => {input.onChange(value)}}
+      {...input}
+    >
+      <option>Choose...</option>
+      <option value='precedes'>precedes</option>
+      <option value='follows'>follows</option>
+    </select>
+  </div>
 )
 
 const renderRelatedConcepts = ({ fields, concepts }) => (
   <div>
     <div style={{marginTop: '15px'}}>
-      <Button type='button' color='grey' onClick={() => fields.push({})}>Add Relationship</Button>
+      <Button type='button'
+        onClick={() => fields.push({})}>
+        Add Relationship
+      </Button>
     </div>
     <div style={{marginTop: '10px'}}>
       {fields.map((rel, index) =>
         <div key={index}
           style={{ marginTop: '5px'}}>
-          <Field
-            name={`${rel}.concept`}
-            component={renderConcepts}
-            concepts={concepts} />
-          <Field
-            name={`${rel}.relationship`}
-            component={renderRelationships}
-            concepts={concepts} />
-          <Button
-            basic
-            type='button'
+          <Form.Group widths='equal'>
+            <Form.Field inline>
+              <Field
+                name={`${rel}.concept`}
+                component={renderConcepts}
+                concepts={concepts}
+                label='Related Concept'
+              />
+            </Form.Field>
+            <Form.Field inline>
+              <Field
+                name={`${rel}.relationship`}
+                component={renderRelationships}
+                concepts={concepts}
+                label='Relationship'
+              />
+            </Form.Field>
+          <button type='button'
             onClick={() => fields.remove(index)}
-            style={{display: 'inline-block', marginLeft: '10px'}}>
+            style={{border: 'none', backgroundColor: 'transparent', color: 'maroon', marginTop: 10}}
+          >
             Remove
-          </Button>
+          </button>
+          </Form.Group>
         </div>
       )}
       </div>
@@ -69,24 +88,45 @@ let AddConceptForm = ({ handleSubmit, concepts }) => {
   return (
     <Grid padded>
       <Grid.Row>
+        <Grid.Column width={1}>
+        </Grid.Column>
         <Grid.Column width={10}>
-          <Segment.Group style={{marginTop: 80}}>
-            <Segment><h2>Add a concept</h2></Segment>
+        <Segment style={{marginTop: 120, backgroundColor: '#eaeaea'}}>
+          <Segment.Group>
+            <Segment><h2>Add a Concept</h2></Segment>
+          </Segment.Group>
+          <Segment.Group>
             <Segment>
-              <form onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit}>
                 <div>
-                  <div style={{display: 'inline-block'}}>
-                    <Field style={{display: 'block'}} name='conceptName' component={renderInput} label='Concept Name'/>
-                  </div>
-                  <div style={{display: 'inline-block', marginLeft: '10px'}}>
-                    <Field style={{display: 'block'}} name='conceptDescr' component={renderInput} label='Description' />
-                  </div>
+                  <Form.Field>
+                    <Field
+                      name='conceptName'
+                      component={renderInput}
+                      label='Concept Name'
+                    />
+                  </Form.Field>
+                  <Form.Field>
+                    <Field
+                      name='conceptDescr'
+                      component={renderInput}
+                      label='Description'
+                    />
+                  </Form.Field>
                 </div>
-                <FieldArray name='relatedConcepts' component={renderRelatedConcepts} concepts={concepts}/>
-                <Button style={{marginTop: '15px'}} type='submit'>Submit</Button>
-              </form>
+                <FieldArray
+                  name='relatedConcepts'
+                  component={renderRelatedConcepts}
+                  concepts={concepts}
+                />
+                <Divider />
+                <Button type='submit' color='grey'>
+                  Submit
+                </Button>
+              </Form>
             </Segment>
           </Segment.Group>
+          </Segment>
         </Grid.Column>
       </Grid.Row>
     </Grid>

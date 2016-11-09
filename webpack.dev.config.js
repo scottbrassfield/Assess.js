@@ -23,7 +23,7 @@ module.exports = {
       },
       {
         test: /\.(jpg|png)$/,
-        loader: 'file?name=[path][name].[hash].[ext]'
+        loader: 'url'
       }
     ]
   },

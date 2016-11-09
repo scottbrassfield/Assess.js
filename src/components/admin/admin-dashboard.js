@@ -6,16 +6,22 @@ const AdminDashboard = () => {
 
   const styles = {
     content: {
-      marginTop: 100
+      marginTop: 120,
+      backgroundColor: '#eaeaea'
     }
   }
 
   return (
     <Grid padded>
-      <Grid.Row style={styles.content}>
-        <Grid.Column width={13}>
+      <Grid.Row>
+        <Grid.Column width={1}>
+        </Grid.Column>
+        <Grid.Column width={12}>
+        <Segment style={styles.content}>
           <Segment.Group>
             <Segment><h1>Actions</h1></Segment>
+          </Segment.Group>
+          <Segment.Group>
             <Segment>
               <h2>Add Concept</h2>
               <h4>Add a new concept to the knowledge space and define how it relates to other concepts</h4>
@@ -31,6 +37,7 @@ const AdminDashboard = () => {
               </Link>
             </Segment>
             </Segment.Group>
+          </Segment>
         </Grid.Column>
       </Grid.Row>
     </Grid>
