@@ -56,3 +56,11 @@ The request body should contain a Problem object with the following properties:
 | --- | --- | --- |
 | question | string, required | the text of the question to be shown the learner |
 | answer | string/number, required | the answer to the provided question |
+
+
+###Run in Development Environment
+- Make sure Neo4j is installed. Instructions here: https://neo4j.com/download/
+- Get a free GrapheneDB sandbox, and copy URL into a GRAPHENEDB_URL environment variable in your bash profile
+- ```npm install```
+- ```npm run dev```
+- Open http://localhost:8080/
