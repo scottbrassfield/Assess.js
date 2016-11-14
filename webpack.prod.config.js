@@ -3,7 +3,10 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
   devtool: 'eval',
 
-  entry: './src/index.js',
+  entry: [
+    'whatwg-fetch',
+    './src/index.js'
+  ],
   output: {
     path: './dist/public/',
     filename: 'bundle.js'
